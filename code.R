@@ -3,3 +3,5 @@ diamonds_data <- diamonds_data[2:11]
 normalized_price <- diamonds_data$price / max(diamonds_data$price)
 fitted_model <- glm(normalized_price ~ diamonds_data$carat + diamonds_data$clarity, family = binomial())
 summary(fitted_model)
+
+any(is.na(diamonds_data)) #check if there are any nulls in our dataset
