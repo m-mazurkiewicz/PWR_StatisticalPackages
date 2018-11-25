@@ -33,7 +33,26 @@ corelations <- cor(variables_data_frame)
 corrplot(corelations, method = 'circle')
 
 standarized_price <- diamonds_data$price / max(diamonds_data$price) #it's obviously not normalization
-fitted_model <- glm(standarized_price ~ diamonds_data$carat + diamonds_data$x, family = gaussian())
+fitted_model <- glm(diamonds_data$price ~ diamonds_data$carat + diamonds_data$x, family = gaussian())
+
+fitted_model <- glm(diamonds_data$price ~ diamonds_data$depth , family = poisson())
 summary(fitted_model)
 
+fitted_model <- glm(diamonds_data$price ~ diamonds_data$x + diamonds_data$y , family = gaussian())
+summary(fitted_model)
+
+fitted_model <- glm(diamonds_data$price ~ diamonds_data$x + diamonds_data$y + diamonds_data$z, family = gaussian())
+summary(fitted_model)
+
+
 #step(model.nnull, scope = list(upper = model.full), direction = 'both', test = 'criteria', data)
+
+simplest_model <- glm(formula = diamonds_data_omited$price ~ 1, family = gaussian())
+complex_model <- glm(formula = diamonds_data_omited$price ~ diamonds_data_omited$carat + diamonds_data_omited$depth + diamonds_data_omited$table + diamonds_data_omited$x + diamonds_data_omited$y + diamonds_data_omited$z, family = gaussian())
+forwards = step(simplest_model, scope=list(lower=formula(simplest_model),upper=formula(complex_model)), direction="forward")
+
+summary(complex_model)
+
+simplest_model <- glm(formula = diamonds_data_omited$price ~ 1, family = inverse.gaussian(link = 'identity'))complex_model <- glm(formula = diamonds_data_omited$price ~ diamonds_data_omited$x + diamonds_data_omited$y + diamonds_data_omited$z, family = gaussian())
+complex_model <- glm(formula = diamonds_data_omited$price ~ diamonds_data_omited$carat + diamonds_data_omited$depth + diamonds_data_omited$table, family = inverse.gaussian(link = 'identity'))
+forwards = step(simplest_model, scope=list(lower=formula(simplest_model),upper=formula(complex_model)), direction="forward")
