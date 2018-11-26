@@ -35,4 +35,28 @@
   \section{Description of data}
   For this report we have decided to analyse "Diamonds" dataset from Kaggle [https://www.kaggle.com/shivam2503/diamonds]. It contains 54940 records and each one has 11 columns with different variables. First one is irrelevant, because it's just index number. Then we have numerical variables - x, y, z that describe size of diamond in each of three dimensions. There is also weight given in carats. Next we have two variables describing percantage relation between appropiate measures within diamond. Depth is the height of a diamond, measured from the culet to the table, divided by its average girdle diameter. Table is the width of the diamond's table expressed as a percentage of its average diameter. The last numerical variable is price. Coming to discrete variables we have cut describing the quality of diamond's cut: Fair, Good, Very Good, Premium, Ideal. Then there is color of diamond ranged descending from D to J. And the last is clarity of particular diamond with possible values: FL,IF, VVS1, VVS2, VS1, VS2, SI1, SI2, I1, I2, I3 (ordering from best to worse).
   
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \section{Aim of analysis}
+  ??????????
+  
+  Aim of our analysis is to find out which of the variables from the dataset has the biggest influence on the price of diamonds.
+  
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \section{Data preprocessing}
+  This, first step of working with data we started from removing unnecessary variables. This is why we deleted the index column, because it is irrelevant information. Then we loked for missing data. Dataset didn't contain any NaNs, but some values were impossible to occure in nature. To handle such situations we changed every zero from x, y or z column to NA, because this will make our upcoming work easier. We also checked if other numerical columns contain zeros, but they didn't. Next,we focused on ensuring that categorical variables don't contain typos. In order to do that we just looked at all values they take, but there wasn't need any cleaning. We didn't deal with outliers, because we will do it within next steps of analysis.
+  
+  <<data_preprocessing, echo=TRUE, eval=TRUE>>=
+    diamonds_data <- diamonds_data[2:11] #data cleaning - removing unnecessary variables
+    #changing 0 to NAs
+    diamonds_data$z[diamonds_data$z==0] = NA
+    diamonds_data$x[diamonds_data$x==0] = NA
+    diamonds_data$y[diamonds_data$y==0] = NA
+    any(is.na(diamonds_data)) #check if there are any nulls in our dataset
+    
+    #checking for typos
+    summary(diamonds_data$cut)
+    summary(diamonds_data$color)
+    summary(diamonds_data$clarity)
+  @
+  
   \end{document}
