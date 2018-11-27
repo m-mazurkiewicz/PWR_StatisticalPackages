@@ -1,6 +1,7 @@
-diamonds_data = read.csv("diamonds.csv", header = TRUE)
+diamonds_data = read.csv("D:/Dokumenty/MATEMATYKA/Statistical Packages/PWR_StatisticalPackages-master/diamonds.csv", header = TRUE)
 #library(rcompanion)
 library('corrplot')
+library(AER)
 
 #check outliers
 diamonds_data <- diamonds_data[2:11] #data cleaning - removing unnecessary variables
@@ -47,12 +48,21 @@ summary(fitted_model)
 
 #step(model.nnull, scope = list(upper = model.full), direction = 'both', test = 'criteria', data)
 
-simplest_model <- glm(formula = diamonds_data_omited$price ~ 1, family = gaussian())
-complex_model <- glm(formula = diamonds_data_omited$price ~ diamonds_data_omited$carat + diamonds_data_omited$depth + diamonds_data_omited$table + diamonds_data_omited$x + diamonds_data_omited$y + diamonds_data_omited$z, family = gaussian())
-forwards = step(simplest_model, scope=list(lower=formula(simplest_model),upper=formula(complex_model)), direction="forward")
+simplest_model <- glm(formula = diamonds_data_omited$price ~ 1, data = diamonds_data)
+complex_model <- glm(formula = diamonds_data_omited$price ~ diamonds_data_omited$carat + diamonds_data_omited$depth + diamonds_data_omited$table + diamonds_data_omited$x + diamonds_data_omited$y + diamonds_data_omited$z, data = diamonds_data)
+#complex_model <- glm(formula = diamonds_data_omited$price ~ ., data = diamonds_data)
+forwards <- step(simplest_model, scope=list(lower=formula(simplest_model),upper=formula(complex_model)), direction="both")
 
-summary(complex_model)
+forwards
 
 simplest_model <- glm(formula = diamonds_data_omited$price ~ 1, family = inverse.gaussian(link = 'identity'))complex_model <- glm(formula = diamonds_data_omited$price ~ diamonds_data_omited$x + diamonds_data_omited$y + diamonds_data_omited$z, family = gaussian())
 complex_model <- glm(formula = diamonds_data_omited$price ~ diamonds_data_omited$carat + diamonds_data_omited$depth + diamonds_data_omited$table, family = inverse.gaussian(link = 'identity'))
 forwards = step(simplest_model, scope=list(lower=formula(simplest_model),upper=formula(complex_model)), direction="forward")
+
+simplest_model <- glm(formula = diamonds_data_omited$price ~ 1, data = diamonds_data)
+complex_model <- glm(formula = diamonds_data_omited$price ~ factor(diamonds_data_omited$clarity) + factor(diamonds_data_omited$color) + factor(diamonds_data_omited$cut), data = diamonds_data)
+#complex_model <- glm(formula = diamonds_data_omited$price ~ ., data = diamonds_data)
+forwards <- step(simplest_model, scope=list(lower=formula(simplest_model),upper=formula(complex_model)), direction="both")
+
+forwards
+ispersiontest(glm(formula = diamonds_data_omited$price ~ factor(diamonds_data_omited$clarity), data = diamonds_data))
