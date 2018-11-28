@@ -1,7 +1,9 @@
-diamonds_data = read.csv("D:/Dokumenty/MATEMATYKA/Statistical Packages/PWR_StatisticalPackages-master/diamonds.csv", header = TRUE)
+diamonds_data = read.csv("diamonds.csv", header = TRUE)
+#diamonds_data = read.csv("D:/Dokumenty/MATEMATYKA/Statistical Packages/PWR_StatisticalPackages-master/diamonds.csv", header = TRUE)
 #library(rcompanion)
 library('corrplot')
-library(AER)
+library('coefplot')
+library(glmulti)
 
 #check outliers
 diamonds_data <- diamonds_data[2:11] #data cleaning - removing unnecessary variables
@@ -55,7 +57,8 @@ forwards <- step(simplest_model, scope=list(lower=formula(simplest_model),upper=
 
 forwards
 
-simplest_model <- glm(formula = diamonds_data_omited$price ~ 1, family = inverse.gaussian(link = 'identity'))complex_model <- glm(formula = diamonds_data_omited$price ~ diamonds_data_omited$x + diamonds_data_omited$y + diamonds_data_omited$z, family = gaussian())
+simplest_model <- glm(formula = diamonds_data_omited$price ~ 1, family = inverse.gaussian(link = 'identity'))
+complex_model <- glm(formula = diamonds_data_omited$price ~ diamonds_data_omited$x + diamonds_data_omited$y + diamonds_data_omited$z, family = gaussian())
 complex_model <- glm(formula = diamonds_data_omited$price ~ diamonds_data_omited$carat + diamonds_data_omited$depth + diamonds_data_omited$table, family = inverse.gaussian(link = 'identity'))
 forwards = step(simplest_model, scope=list(lower=formula(simplest_model),upper=formula(complex_model)), direction="forward")
 
@@ -64,5 +67,29 @@ complex_model <- glm(formula = diamonds_data_omited$price ~ factor(diamonds_data
 #complex_model <- glm(formula = diamonds_data_omited$price ~ ., data = diamonds_data)
 forwards <- step(simplest_model, scope=list(lower=formula(simplest_model),upper=formula(complex_model)), direction="both")
 
-forwards
-ispersiontest(glm(formula = diamonds_data_omited$price ~ factor(diamonds_data_omited$clarity), data = diamonds_data))
+extract.coef(forwards)
+
+ordered_diamonds <- diamonds_data_omited[order(diamonds_data_omited$price),]
+prediction <- ordered_diamonds$carat * 10987.11 + ordered_diamonds$x * (-1437.36) + ordered_diamonds$depth * (-205.71) + ordered_diamonds$table * (-101.88) + ordered_diamonds$y * (84.52) + 21476.93
+
+
+our_simple_model <- glm(diamonds_data_omited$price ~ diamonds_data_omited$carat + diamonds_data_omited$depth)
+
+our_prediction <- 4063.3 + ordered_diamonds$carat * 7764.5 + ordered_diamonds$depth * (-102.4)
+
+
+###############################################################################################
+#use of glmmulti (probably it needs java)
+
+result_BIC_gaussian <- glmulti('price', xr = c('x', 'y', 'z', 'carat', 'depth', 'table'), data = diamonds_data_omited, level = 1, crit = 'bic' , maxsize = 2) #family = poisson())
+result_AIC_gaussian <- glmulti('price', xr = c('x', 'y', 'z', 'carat', 'depth', 'table'), data = diamonds_data_omited, level = 1, crit = 'aic' , maxsize = 2) #family = poisson())
+
+result_BIC_gaussian_with_categorical <- glmulti('price', xr = c('x', 'y', 'z', 'carat', 'depth', 'table', 'cut', 'color', 'clarity'), data = diamonds_data_omited, level = 1, crit = 'bic' , maxsize = 3) #family = poisson())
+result_AIC_gaussian_with_categorical <- glmulti('price', xr = c('x', 'y', 'z', 'carat', 'depth', 'table', 'cut', 'color', 'clarity'), data = diamonds_data_omited, level = 1, crit = 'aic' , maxsize = 3) #family = poisson())
+
+#rest of data discarded. The criteria was that that data didn't occur in top models
+result_BIC_gaussian_with_interactions <- glmulti('price', xr = c('x', 'z', 'carat', 'cut', 'color', 'clarity'), data = diamonds_data_omited, level = 2, crit = 'bic' , maxsize = 3) #family = poisson())
+result_AIC_gaussian_with_interactions <- glmulti('price', xr = c('x', 'z', 'carat', 'cut', 'color', 'clarity'), data = diamonds_data_omited, level = 1, crit = 'aic' , maxsize = 3) #family = poisson())
+
+weightable(result_BIC_gaussian)
+weightable(result_BIC_gaussian_with_categorical)
