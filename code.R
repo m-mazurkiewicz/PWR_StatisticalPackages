@@ -81,7 +81,7 @@ our_prediction <- 4063.3 + ordered_diamonds$carat * 7764.5 + ordered_diamonds$de
 ###############################################################################################
 #use of glmmulti (probably it needs java)
 
-result_BIC_gaussian <- glmulti('price', xr = c('x', 'y', 'z', 'carat', 'depth', 'table'), data = diamonds_data_omited, level = 1, crit = 'bic' , maxsize = 2) #family = poisson())
+result_BIC_gaussian <- glmulti('price', xr = c('x', 'y', 'z', 'carat', 'depth', 'table'), data = diamonds_data_omited, level = 1, crit = 'bic' , maxsize = 2, family = poisson())
 result_AIC_gaussian <- glmulti('price', xr = c('x', 'y', 'z', 'carat', 'depth', 'table'), data = diamonds_data_omited, level = 1, crit = 'aic' , maxsize = 2) #family = poisson())
 
 result_BIC_gaussian_with_categorical <- glmulti('price', xr = c('x', 'y', 'z', 'carat', 'depth', 'table', 'cut', 'color', 'clarity'), data = diamonds_data_omited, level = 1, crit = 'bic' , maxsize = 3) #family = poisson())
@@ -89,7 +89,38 @@ result_AIC_gaussian_with_categorical <- glmulti('price', xr = c('x', 'y', 'z', '
 
 #rest of data discarded. The criteria was that that data didn't occur in top models
 result_BIC_gaussian_with_interactions <- glmulti('price', xr = c('x', 'z', 'carat', 'cut', 'color', 'clarity'), data = diamonds_data_omited, level = 2, crit = 'bic' , maxsize = 3) #family = poisson())
-result_AIC_gaussian_with_interactions <- glmulti('price', xr = c('x', 'z', 'carat', 'cut', 'color', 'clarity'), data = diamonds_data_omited, level = 1, crit = 'aic' , maxsize = 3) #family = poisson())
+result_AIC_gaussian_with_interactions <- glmulti('price', xr = c('x', 'z', 'carat', 'cut', 'color', 'clarity'), data = diamonds_data_omited, level = 2, crit = 'aic' , maxsize = 3) #family = poisson())
 
 weightable(result_BIC_gaussian)
 weightable(result_BIC_gaussian_with_categorical)
+
+
+
+#############################################################
+#test of different families/link functions
+result_BIC <- glmulti('price', xr = c('x', 'y', 'z', 'carat', 'depth', 'table'), data = diamonds_data_omited, level = 1, crit = 'bic' , maxsize = 3, family = poisson(link = 'identity'))
+weightable(result_BIC) #best 16945653
+
+result_BIC <- glmulti('price', xr = c('x', 'y', 'z', 'carat', 'depth', 'table'), data = diamonds_data_omited, level = 1, crit = 'bic' , maxsize = 3, family = poisson(link = 'sqrt'))
+weightable(result_BIC) #it needs sth more to provide , so not completed <<<<--------------
+
+# poisson with identity produces NaNs
+
+result_BIC <- glmulti('price', xr = c('x', 'y', 'z', 'carat', 'depth', 'table'), data = diamonds_data_omited, level = 1, crit = 'bic' , maxsize = 3, family = Gamma())
+weightable(result_BIC) #it needs sth more to provide (or producing NaNs), so not completed <<<<--------------
+#the same with identity
+
+result_BIC <- glmulti('price', xr = c('x', 'y', 'z', 'carat', 'depth', 'table'), data = diamonds_data_omited, level = 1, crit = 'bic' , maxsize = 3, family = Gamma(link = 'log'))
+weightable(result_BIC) #best 848887.7 <<<<<<<--------------- THIS IS THE BEST--------
+
+result_BIC <- glmulti('price', xr = c('x', 'y', 'z', 'carat', 'depth', 'table'), data = diamonds_data_omited, level = 1, crit = 'bic' , maxsize = 3, family = inverse.gaussian())
+weightable(result_BIC) #it needs sth more to provide (or producing NaNs), so not completed <<<<--------------
+#the same with identity
+#log produces different error, but works for single glm fit
+
+result_BIC <- glmulti('price', xr = c('x', 'y', 'z', 'carat', 'depth', 'table'), data = diamonds_data_omited, level = 1, crit = 'bic' , maxsize = 3, family = gaussian())
+weightable(result_BIC) #best 942378.4
+
+glm(formula = diamonds_data_omited$price ~ diamonds_data_omited$x + diamonds_data_omited$z + diamonds_data_omited$carat, family = inverse.gaussian())
+#strange thing is that calling glm with variables from the best fit produces NaNs
+result_BIC@objects[1]
