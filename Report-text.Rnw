@@ -131,5 +131,9 @@ coefficient        & 6891.3 & 3657.7 & 2664.9 & 4883.4 & 4448.8 & 6154.9 & 5788.
     To find those three models from previous section we used glmulti function from glmulti package. Thus we take into consideration all models with specific restrictions. We set maximum model size to 3 in case with only continious variables and to 4 in the rest of cases. 
     
     We used glmulti function to find all of considered models. But it turned out, that in second and third case the best model doesn't include z variable. That arouse our curiosity if model excluding this variable is significantly better than with it. Under BIC criteria best model with categorical variables with additional z is only 0.02 \% better than without it. Although it gives better BIC it contains more variables so it may be considered as worse model. 
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \section{Check model assumptions}
+    We checked if fitted models fulfill appropriate assumptions. It turns out that none of them do, but we will assume that they do.  
   
   \end{document}

@@ -4,6 +4,7 @@ diamonds_data = read.csv("diamonds.csv", header = TRUE)
 library('corrplot')
 library('coefplot')
 library(glmulti)
+library(car)
 
 #check outliers
 diamonds_data <- diamonds_data[2:11] #data cleaning - removing unnecessary variables
@@ -84,11 +85,11 @@ our_prediction <- 4063.3 + ordered_diamonds$carat * 7764.5 + ordered_diamonds$de
 result_BIC_gaussian <- glmulti('price', xr = c('x', 'y', 'z', 'carat', 'depth', 'table'), data = diamonds_data_omited, level = 1, crit = 'bic' , maxsize = 2, family = poisson())
 result_AIC_gaussian <- glmulti('price', xr = c('x', 'y', 'z', 'carat', 'depth', 'table'), data = diamonds_data_omited, level = 1, crit = 'aic' , maxsize = 2) #family = poisson())
 
-result_BIC_gaussian_with_categorical <- glmulti('price', xr = c('x', 'y', 'z', 'carat', 'depth', 'table', 'cut', 'color', 'clarity'), data = diamonds_data_omited, level = 1, crit = 'bic' , maxsize = 3) #family = poisson())
-result_AIC_gaussian_with_categorical <- glmulti('price', xr = c('x', 'y', 'z', 'carat', 'depth', 'table', 'cut', 'color', 'clarity'), data = diamonds_data_omited, level = 1, crit = 'aic' , maxsize = 3) #family = poisson())
+result_BIC_gaussian_with_categorical <- glmulti('price', xr = c('x', 'y', 'z', 'carat', 'depth', 'table', 'cut', 'color', 'clarity'), data = diamonds_data_omited, level = 1, crit = 'bic' , maxsize = 4) #, family = quasipoisson())
+result_AIC_gaussian_with_categorical <- glmulti('price', xr = c('x', 'y', 'z', 'carat', 'depth', 'table', 'cut', 'color', 'clarity'), data = diamonds_data_omited, level = 1, crit = 'aic' , maxsize = 4) #family = poisson())
 
 #rest of data discarded. The criteria was that that data didn't occur in top models
-result_BIC_gaussian_with_interactions <- glmulti('price', xr = c('x', 'z', 'carat', 'cut', 'color', 'clarity'), data = diamonds_data_omited, level = 2, crit = 'bic' , maxsize = 3, method = 'g') #family = poisson())
+result_BIC_gaussian_with_interactions <- glmulti('price', xr = c('x', 'z', 'carat', 'cut', 'color', 'clarity'), data = diamonds_data_omited, level = 2, crit = 'bic' , maxsize = 4, method = 'g') #family = poisson())
 result_AIC_gaussian_with_interactions <- glmulti('price', xr = c('x', 'z', 'carat', 'cut', 'color', 'clarity'), data = diamonds_data_omited, level = 2, crit = 'aic' , maxsize = 3) #family = poisson())
 
 weightable(result_BIC_gaussian)
@@ -122,12 +123,35 @@ weightable(result_BIC) #it needs sth more to provide (or producing NaNs), so not
 result_BIC <- glmulti('price', xr = c('x', 'y', 'z', 'carat', 'depth', 'table'), data = diamonds_data_omited, level = 1, crit = 'bic' , maxsize = 3, family = gaussian())
 weightable(result_BIC) #best 942378.4
 
-glm(formula = diamonds_data_omited$price ~ diamonds_data_omited$x + diamonds_data_omited$z + diamonds_data_omited$carat, family = inverse.gaussian())
+glm(formula = diamonds_data_omited$price ~ diamonds_data_omited$x + diamonds_data_omited$z + diamonds_data_omited$carat, family = Gamma(link = 'log'))
 #strange thing is that calling glm with variables from the best fit produces NaNs
 result_BIC@objects[1]
 
-test <- glm(formula = diamonds_data_omited$price ~ diamonds_data_omited$carat + diamonds_data_omited$color:diamonds_data_omited$carat + diamonds_data_omited$clarity:diamonds_data_omited$carat, family = gaussian())
+test <- glm(formula = price~color+clarity+x+carat, data = diamonds_data_omited, family = gaussian())
+summary(test)
 price ~ 1 + carat + color:carat + clarity:carat
+test2 <- glm(formula = price~z+x+carat, data = diamonds_data_omited, family = Gamma(link = 'log'))
+
+
+#####################################################################################
+#model assumptions
+
+
+model_simple <- glm(formula = price~z+x+carat, data = diamonds_data_omited, family = Gamma(link = 'log'))
+model_middle <- glm(formula = price~color+clarity+x+carat, data = diamonds_data_omited, family = gaussian())
+model_complex <- glm(formula = price~carat + carat:x + carat:color + carat:clarity, data = diamonds_data_omited, family = gaussian())
+layout(matrix(1:6, byrow = T, ncol = 3))
+plot(model_simple, which = 1:6)
+
+layout(matrix(1:6, byrow = T, ncol = 3))
+plot(model_middle, which = 1:6)
+
+layout(matrix(1:6, byrow = T, ncol = 3))
+plot(model_complex, which = 1:6)
+
+########################################################################3
+#cooks distance
+cookd(mode_simple)
 
 #niezależne residua od wartości
 #mają być asymptotycznie normalne
