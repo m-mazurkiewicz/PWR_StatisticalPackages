@@ -88,11 +88,12 @@ result_BIC_gaussian_with_categorical <- glmulti('price', xr = c('x', 'y', 'z', '
 result_AIC_gaussian_with_categorical <- glmulti('price', xr = c('x', 'y', 'z', 'carat', 'depth', 'table', 'cut', 'color', 'clarity'), data = diamonds_data_omited, level = 1, crit = 'aic' , maxsize = 3) #family = poisson())
 
 #rest of data discarded. The criteria was that that data didn't occur in top models
-result_BIC_gaussian_with_interactions <- glmulti('price', xr = c('x', 'z', 'carat', 'cut', 'color', 'clarity'), data = diamonds_data_omited, level = 2, crit = 'bic' , maxsize = 3) #family = poisson())
+result_BIC_gaussian_with_interactions <- glmulti('price', xr = c('x', 'z', 'carat', 'cut', 'color', 'clarity'), data = diamonds_data_omited, level = 2, crit = 'bic' , maxsize = 3, method = 'g') #family = poisson())
 result_AIC_gaussian_with_interactions <- glmulti('price', xr = c('x', 'z', 'carat', 'cut', 'color', 'clarity'), data = diamonds_data_omited, level = 2, crit = 'aic' , maxsize = 3) #family = poisson())
 
 weightable(result_BIC_gaussian)
 weightable(result_BIC_gaussian_with_categorical)
+weightable(result_BIC_gaussian_with_interactions)
 
 
 
@@ -124,3 +125,12 @@ weightable(result_BIC) #best 942378.4
 glm(formula = diamonds_data_omited$price ~ diamonds_data_omited$x + diamonds_data_omited$z + diamonds_data_omited$carat, family = inverse.gaussian())
 #strange thing is that calling glm with variables from the best fit produces NaNs
 result_BIC@objects[1]
+
+test <- glm(formula = diamonds_data_omited$price ~ diamonds_data_omited$carat + diamonds_data_omited$color:diamonds_data_omited$carat + diamonds_data_omited$clarity:diamonds_data_omited$carat, family = gaussian())
+price ~ 1 + carat + color:carat + clarity:carat
+
+#niezależne residua od wartości
+#mają być asymptotycznie normalne
+#if family == gaussian than on scale-location plot no patterns
+#copulat test
+#gtest, fishers_indepedence test or sth like that

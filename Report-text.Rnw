@@ -70,4 +70,8 @@ Depth is the height of a diamond, measured from the culet to the table, divided 
     summary(diamonds_data$clarity)
   @
   
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \section{Other models}
+    To find those three models from previous section we used glmulti function from glmulti package. Thus we take into consideration all models with specific restrictions. We set maximum model size to 3 in case with additional interactions and to 2 in rest cases. 
+  
   \end{document}
