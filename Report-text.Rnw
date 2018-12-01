@@ -27,7 +27,7 @@
   
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % strona tytulowa
-  \title{Ststistical packages - report 1}
+  \title{Statistical packages - report 1}
   \author{Urszula Grochocinska, Marcin Mazurkiewicz}
   \maketitle
   \tableofcontents 
@@ -38,23 +38,23 @@
 \vspace{0.2pt}
   \begin{center}
     \includegraphics[width=0.35\textwidth]{diamondanatomyimproved.jpg}%{./Pictures/mainscreen1.png}
-    \caption{Anathomy of diamond. \textit{source:\\ https://www.everything-wedding-rings.com}}
+    \caption{Anatomy of diamond. \textit{source:\\ https://www.everything-wedding-rings.com}}
     \label{fig:databaseUserTable}
   \end{center}
   \vspace{0.2pt}
 \end{wrapfigure} 
-For this report we have decided to analyse "Diamonds", dataset from Kaggle [https://www.kaggle.com/shivam2503/diamonds]. It contains 54940 records and each one has 11 columns with different variables. First one is irrelevant, because it's just index number. Then we have numerical variables - x, y, z that describe size of diamond in each of three dimensions.There is also weight given in carats. Today, a carat is equal to exactly 0.2 grams). Carat weight is unrelated to the similar sounding karat, which refers to gold's purity. Next we have two variables describing percantage relation between appropiate measures within the diamond.
-Depth is the height of a diamond, measured from the culet to the table, divided by its average girdle diameter. Table is the width of the diamond's table expressed as a percentage of its average diameter. The last numerical variable is price. Coming to discrete variables we have cut describing the quality of diamond's cut: Fair, Good, Very Good, Premium, Ideal. The cut describes the symetry proportioning and polish of the diamond. Then there is color of diamond ranged descending from D to J. The later letter in the alphabet the more yellow. And the last is clarity of particular diamond with possible values: FL,IF, VVS1, VVS2, VS1, VS2, SI1, SI2, I1, I2, I3 (ordering from best to worse). It reffers to the absence of inclusions and blemishes.
+For this report we have decided to analyse "Diamonds", dataset from Kaggle [https://www.kaggle.com/shivam2503/diamonds]. It contains 54940 records and each one has 11 columns with different variables. First one is irrelevant, because it's just index number. Then we have numerical variables - x, y, z that describe size of diamond in each of three dimensions.There is also weight given in carats. Today, a carat is equal to exactly 0.2 grams). Carat weight is unrelated to the similar sounding karat, which refers to gold's purity. Next we have two variables describing percentage relation between appropriate measures within the diamond.
+Depth is the height of a diamond, measured from the culet to the table, divided by its average girdle diameter. Table is the width of the diamond's table expressed as a percentage of its average diameter. The last numerical variable is price. Coming to discrete variables we have cut describing the quality of diamond's cut: Fair, Good, Very Good, Premium, Ideal. The cut describes the symmetry proportioning and polish of the diamond. Then there is color of diamond ranged descending from D to J. The later letter in the alphabet the more yellow. And the last is clarity of particular diamond with possible values: FL,IF, VVS1, VVS2, VS1, VS2, SI1, SI2, I1, I2, I3 (ordering from best to worse). It refers to the absence of inclusions and blemishes.
   
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \section{Aim of analysis}
   
-  Jewelery is a kind of art made of expensive raw material. These art is based on precision and integrity but because of the fact that it is an art sometimes the defects increase the price. These defects make diamond unique and uniqueness is the main part of art. In our analyze we would like to check which features influence the price and at which level. Besides we are intrested how important are all features that are influenced by jeweler(shape, cut) and that what are natural (color, clarity)
+  Jewelry is a kind of art made of expensive raw material. These art is based on precision and integrity but because of the fact that it is an art sometimes the defects increase the price. These defects make diamond unique and uniqueness is the main part of art. In our analyze we would like to check which features influence the price and at which level. Besides we are interested how important are all features that are influenced by jeweler(shape, cut) and that what are natural (color, clarity)
   
   
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \section{Data preprocessing}
-  This, first step of working with data we started from removing unnecessary variables. We remove the index column, because it is irrelevant information. Then we loked for missing data. Dataset didn't contain any NaNs, but some values were impossible to occure in reality. To handle such situations we changed every zero from x, y or z column to NA, because this will make our upcoming work easier. We also checked if other numerical columns contain zeros, but they didn't. Next,we focused on ensuring that categorical variables don't contain typos. In order to do that we just looked at all values they take, but there wasn't need any cleaning. We didn't deal with outliers, because we will do it within next steps of analysis.
+  This, first step of working with data we started from removing unnecessary variables. We remove the index column, because it is irrelevant information. Then we looked for missing data. Dataset didn't contain any NaNs, but some values were impossible to occur in reality. To handle such situations we changed every zero from x, y or z column to NA, because this will make our upcoming work easier. We also checked if other numerical columns contain zeros, but they didn't. Next,we focused on ensuring that categorical variables don't contain typos. In order to do that we just looked at all values they take, but there wasn't need any cleaning. We didn't deal with outliers, because we will do it within next steps of analysis.
   
   <<data_preprocessing, echo=TRUE, eval=TRUE>>=
     diamonds_data <- diamonds_data[2:11] #data cleaning - removing unnecessary variables
@@ -72,8 +72,8 @@ Depth is the height of a diamond, measured from the culet to the table, divided 
   
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \section{Model fitting}
-    \subsection{Continious variables}
-    To fit model to data we use functon glmulti from package glmulti. To reduce complexity of model at this step we decided to choose maximum number of used variables to 3. We checked models with different distribution families. These were Gaussian, Poisson and Gamma. It turned out that Gamma model provides the best fit under the BIC criteria. The formula of this model is as follows:
+    \subsection{Continuous variables}
+    To fit model to data we use function glmulti from package glmulti. To reduce complexity of model at this step we decided to choose maximum number of used variables to 3. We checked models with different distribution families. These were Gaussian, Poisson and Gamma. It turned out that Gamma model provides the best fit under the BIC criteria. The formula of this model is as follows:
     \begin{equation}
       \text{cost} = -1.0777 \text{carat} + 0.5714 z  + 0.9717 x +  1.0882.
     \end{equation}
@@ -87,7 +87,7 @@ Depth is the height of a diamond, measured from the culet to the table, divided 
     A the plot we can clearly see that there outliers, but we will handle it in next sections.
 
     \subsection{Additional categorical variables}
-    In case of additional categorical variables we used very similar approach as in continious variables. But this time we increased maximum number of variables to 4 and considered Gaussian family. The best model we have found is: 
+    In case of additional categorical variables we used very similar approach as in continuous variables. But this time we increased maximum number of variables to 4 and considered Gaussian family. The best model we have found is: 
     \begin{equation}
       \text{cost} = -1016.9 x + 11192.5 \text{carat}  + C_i + D_i - 2826.4,
     \end{equation}
@@ -95,7 +95,7 @@ Depth is the height of a diamond, measured from the culet to the table, divided 
     
   \begin{table}[]
   \begin{tabular}{l|llllll}
-  colour(C_i) & E      & F      & G      & H      & I       & J       \\ \hline
+  color(C_i) & E      & F      & G      & H      & I       & J       \\ \hline
   coefficient  & -214.2 & -282.6 & -486.8 & -993.2 & -1477.5 & -2397.4
   \end{tabular}
   \end{table}
@@ -116,7 +116,7 @@ Depth is the height of a diamond, measured from the culet to the table, divided 
   
   
   \subsection{Model with additional interactions}
-  To find model with additional interactions we use very similar aproach as in previous cases. Maximum number of variables is 4 and the family is Gaussian. That's how we find the following model:
+  To find model with additional interactions we use very similar approach as in previous cases. Maximum number of variables is 4 and the family is Gaussian. That's how we find the following model:
   
     \begin{equation}
       \text{cost} =  - 6912.8 \text{carat} + 1527.5 \text{carat} \cdot x + C_i + D_i - 783.9,
@@ -146,12 +146,14 @@ coefficient        & 6891.3 & 3657.7 & 2664.9 & 4883.4 & 4448.8 & 6154.9 & 5788.
   
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \section{Other models}
-    To find those three models from previous section we used glmulti function from glmulti package. Thus we take into consideration all models with specific restrictions. We set maximum model size to 3 in case with only continious variables and to 4 in the rest of cases. 
+    To find those three models from previous section we used glmulti function from glmulti package. Thus we take into consideration all models with specific restrictions. We set maximum model size to 3 in case with only continuous variables and to 4 in the rest of cases. 
     
     We used glmulti function to find all of considered models. But it turned out, that in second and third case the best model doesn't include z variable. That arouse our curiosity if model excluding this variable is significantly better than with it. Under BIC criteria best model with categorical variables with additional z is only 0.02 \% better than without it. Although it gives better BIC it contains more variables so it may be considered as worse model. 
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \section{Check model assumptions}
     We checked if fitted models fulfill appropriate assumptions. It turns out that none of them do, but we will assume that they do.  
+    
+    
   
   \end{document}
