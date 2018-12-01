@@ -151,13 +151,13 @@ plot(model_complex, which = 1:6)
 
 ########################################################################
 #outliers handling
-outliers_from_simple <- outlierTest(model_simple, n.max = 20) #it computes cook's distance and prints max values
-outliers_indexes_from_simple <- strtoi(labels(outliers_from_simple$p))
+outliers_from_simple <- outlierTest(model_simple, n.max = 20) #it computes Bonferroni Outlier Test and prints max values
+outliers_indexes_from_simple <- strtoi(labels(outliers_from_simple$p)) #indexes of outliers - we can do sth with them for ex. delete them
 
-outliers_from_middle <- outlierTest(model_middle, n.max = 20)
-outliers_indexes_from_middle <- strtoi(labels(outliers_indexes_from_middle$p))
+outliers_from_middle <- outlierTest(model_middle, n.max = 30)
+outliers_indexes_from_middle <- strtoi(labels(outliers_from_middle$p))
 
-outliers_from_complex <- outlierTest(model_complex, n.max = 20)
+outliers_from_complex <- outlierTest(model_complex, n.max = 30)
 outliers_indexes_from_complex <- strtoi(labels(outliers_from_complex$p))
 
 #niezależne residua od wartości
