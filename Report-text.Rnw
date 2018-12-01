@@ -28,7 +28,7 @@
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % strona tytulowa
   \title{Statistical packages - report 1}
-  \author{Urszula Grochocinska, Marcin Mazurkiewicz}
+  \author{Urszula Grochocińska, Marcin Mazurkiewicz}
   \maketitle
   \tableofcontents 
   
@@ -152,8 +152,18 @@ coefficient        & 6891.3 & 3657.7 & 2664.9 & 4883.4 & 4448.8 & 6154.9 & 5788.
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \section{Check model assumptions}
-    We checked if fitted models fulfill appropriate assumptions. It turns out that none of them do, but we will assume that they do.  
+    We checked if fitted models fulfill appropriate assumptions. It turns out that none of them do, but we will assume that they do. On the plots below we can see that non of them has normally distributed residuals.
     
+    <<model assumptions, echo=FALSE, eval=TRUE>>=
+    layout(matrix(1:6, byrow = T, ncol = 3))
+    plot(model_simple, which = 1:6)
+    
+    layout(matrix(1:6, byrow = T, ncol = 3))
+    plot(model_middle, which = 1:6)
+    
+    layout(matrix(1:6, byrow = T, ncol = 3))
+    plot(model_complex, which = 1:6)
+    @
     
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -173,6 +183,9 @@ model_complex <- glm(formula = price~carat + carat:x + carat:color + carat:clari
   outliers_indexes_from_complex <- strtoi(labels(outliers_from_complex$p))
   @
     
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \section{Order models}
+    It turns out that the best fit we managed to make is with the simplest model with just continuous variables. It becomes even better when we delete outliers [??????]. The worst fit of those three models was obtained for model with continuous and categorical variables, but without interactions. Th most complex model with additional interactions gave fit somewhere between two previous ones. 
     
      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \section{Check significance of parameters}
@@ -181,6 +194,6 @@ model_complex <- glm(formula = price~carat + carat:x + carat:color + carat:clari
   <<significance_checking, echo=FALSE, eval=TRUE>>=
     summary(model_simple)
   @
-  It turns out that in all models that were fitted by us all parameters are significant. It means that we shouldn't get rid of them.
+  For two other models we do the same analysis. It turns out that in all models that were fitted by us all parameters are significant. It means that we shouldn't get rid of them.
   
   \end{document}
