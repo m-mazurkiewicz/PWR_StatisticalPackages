@@ -155,5 +155,32 @@ coefficient        & 6891.3 & 3657.7 & 2664.9 & 4883.4 & 4448.8 & 6154.9 & 5788.
     We checked if fitted models fulfill appropriate assumptions. It turns out that none of them do, but we will assume that they do.  
     
     
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \section{Outliers handling}
+    To find Outliers of our fits we use outlierTest function. It provides us a list of most significant outliers. We decided [???????? WHAT DO WE DO] to delete outliers that are too far [???] from rest of the data. Afret that we can try to fit the models again. (three lines below but using dataset with deleted outliers - different for each glm or fit by glmulti again, but maybe not necessarily)
+    model_simple <- glm(formula = price~z+x+carat, data = diamonds_data_omited, family = Gamma(link = 'log'))
+model_middle <- glm(formula = price~color+clarity+x+carat, data = diamonds_data_omited, family = gaussian())
+model_complex <- glm(formula = price~carat + carat:x + carat:color + carat:clarity, data = diamonds_data_omited, family = gaussian())
+  <<outliers, echo=FALSE, eval=TRUE>>=
+  outliers_from_simple <- outlierTest(model_simple, n.max = 20) #it computes Bonferroni Outlier Test and prints max values
+  outliers_indexes_from_simple <- strtoi(labels(outliers_from_simple$p)) #indexes of outliers - we can do sth with them for ex. delete them
+  
+  outliers_from_middle <- outlierTest(model_middle, n.max = 30)
+  outliers_indexes_from_middle <- strtoi(labels(outliers_from_middle$p))
+  
+  outliers_from_complex <- outlierTest(model_complex, n.max = 30)
+  outliers_indexes_from_complex <- strtoi(labels(outliers_from_complex$p))
+  @
+    
+    
+     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \section{Check significance of parameters}
+    To check if all parameters in our models are significant we use function summary called at specific model. Than we look at the significance codes and we can find out what parameters are significant. It looks like in the example below:
+    
+  <<significance_checking, echo=FALSE, eval=TRUE>>=
+    summary(model_simple)
+  @
+  It turns out that in all models that were fitted by us all parameters are significant. It means that we shouldn't get rid of them.
   
   \end{document}
