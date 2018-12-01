@@ -78,7 +78,13 @@ Depth is the height of a diamond, measured from the culet to the table, divided 
       \text{cost} = -1.0777 \text{carat} + 0.5714 z  + 0.9717 x +  1.0882.
     \end{equation}
     
-    PLOT!!!!!!!!
+    <<model_simple, echo=FALSE, eval=TRUE>>=
+    model_simple <- glm(formula = price~z+x+carat, data = diamonds_data_omited, family = Gamma(link = 'log'))
+    plot(first_model$fitted.values)
+    points(diamonds_data_omited$price, col = 'red')
+    @
+    
+    A the plot we can clearly see that there outliers, but we will handle it in next sections.
 
     \subsection{Additional categorical variables}
     In case of additional categorical variables we used very similar approach as in continious variables. But this time we increased maximum number of variables to 4 and considered Gaussian family. The best model we have found is: 
@@ -101,6 +107,12 @@ Depth is the height of a diamond, measured from the culet to the table, divided 
   coefficient  & 5707.1 & 3922.3 & 2952.6 & 4878.2 & 4559.3 & 5339.5 & 5266.3
   \end{tabular}
   \end{table}
+  
+  <<model_middle, echo=FALSE, eval=TRUE>>=
+    model_middle <- glm(formula = price~color+clarity+x+carat, data = diamonds_data_omited, family = gaussian())
+  plot(model_middle$fitted.values)
+  points(diamonds_data_omited$price, col = 'red')
+  @
   
   
   \subsection{Model with additional interactions}
@@ -125,6 +137,12 @@ carat $\cdot$ clarity(D_i) & IF     & SI1    & SI2    & VS1    & VS2    & VVS1  
 coefficient        & 6891.3 & 3657.7 & 2664.9 & 4883.4 & 4448.8 & 6154.9 & 5788.6
 \end{tabular}
 \end{table}
+
+    <<model_complex, echo=FALSE, eval=TRUE>>=
+    model_complex <- glm(formula = price~carat + carat:x + carat:color + carat:clarity, data = diamonds_data_omited, family = gaussian())
+  plot(model_complex$fitted.values)
+  points(diamonds_data_omited$price, col = 'red')
+  @
   
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \section{Other models}
