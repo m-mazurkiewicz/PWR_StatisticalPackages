@@ -147,8 +147,9 @@ grid.arrange(p3, p2, p1, p4, nrow = 2)
 <<model_simple, fig=TRUE, echo=TRUE, eval=TRUE, fig.cap='Result of GLM fit and real data in a model with continious and categorical variables.'>>=
 model_simple <- glm(formula = price~z+x+carat, data = diamonds_data_omited,
                     family = Gamma(link = 'log'))
-plot(model_simple$fitted.values[seq(1, to=54000, by = 50)])
-points(diamonds_data_omited$price[seq(1, to=54000, by = 50)], col = 'red')
+plot(seq(1, to=54000, by = 50), model_simple$fitted.values[seq(1, to=54000, by = 50)], cex=.8, xlab = 'Number of observation', ylab = 'Diamond price')
+points(seq(1, to=54000, by = 50), diamonds_data_omited$price[seq(1, to=54000, by = 50)], col = 'red', pch = '.', cex=2)
+legend(35000, 21000, legend=c("Fitted values", "Real values"), col=c("black", "red"), lty=3, cex=.8)
 @
     
 A the plot we can clearly see that there outliers, but we will handle it in next sections.
@@ -182,8 +183,9 @@ A the plot we can clearly see that there outliers, but we will handle it in next
 <<model_middle, fig=TRUE, echo=FALSE, eval=TRUE, fig.cap='Result of GLM fit and real data in a model with continious and categorical variables.'>>=
 model_middle <- glm(formula = price~color+clarity+x+carat, data = diamonds_data_omited,
                     family = gaussian())
-plot(model_middle$fitted.values[seq(1, to=54000, by = 50)])
-points(diamonds_data_omited$price[seq(1, to=54000, by = 50)], col = 'red')
+plot(seq(1, to=54000, by = 50), model_middle$fitted.values[seq(1, to=54000, by = 50)], cex=.8, xlab = 'Number of observation', ylab = 'Diamond price')
+points(seq(1, to=54000, by = 50), diamonds_data_omited$price[seq(1, to=54000, by = 50)], col = 'red', pch = '.', cex=2)
+legend(35000, 23000, legend=c("Fitted values", "Real values"), col=c("black", "red"), lty=3, cex=.8)
 @
   
   
@@ -219,8 +221,9 @@ coefficient        & 6891.3 & 3657.7 & 2664.9 & 4883.4 & 4448.8 & 6154.9 & 5788.
 <<model_complex, fig=TRUE, echo=FALSE, eval=TRUE, fig.cap='Result of GLM fit and real data in a model with additional interactions between variables.'>>=
 model_complex <- glm(formula = price~carat + carat:x + carat:color + carat:clarity,
                      data = diamonds_data_omited, family = gaussian())
-plot(model_complex$fitted.values[seq(1, to=54000, by = 50)])
-points(diamonds_data_omited$price[seq(1, to=54000, by = 50)], col = 'red')
+plot(seq(1, to=54000, by = 50), model_complex$fitted.values[seq(1, to=54000, by = 50)],  cex=.8, xlab = 'Number of observation', ylab = 'Diamond price')
+points(seq(1, to=54000, by = 50), diamonds_data_omited$price[seq(1, to=54000, by = 50)], col = 'red', pch = '.', cex=2)
+legend(35000, 22000, legend=c("Fitted values", "Real values"), col=c("black", "red"), lty=3, cex=.8)
 @
   
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
