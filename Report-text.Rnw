@@ -54,14 +54,14 @@ opts_knit$set(root.dir = getwd())
 \vspace{0.2pt}
 \end{wrapfigure} 
 
-For this report we have decided to analyse "Diamonds", dataset about the features and prices of stones which we have found on Kaggle [https://www.kaggle.com/shivam2503/diamonds]. It contains 54940 records and each one has 11 columns with different variables. First one is irrelevant, because it's just index number. Then we have numerical variables - x, y, z that describe size of diamond in each of three dimensions.There is also weight given in carats. Today, a carat is equal to exactly 0.2 grams). Carat weight is unrelated to the similar sounding karat, which refers to gold's purity. Next we have two variables describing percentage relation between appropriate measures within the diamond.
-Depth is the height of a diamond, measured from the culet to the table, divided by its average girdle diameter. Table is the width of the diamond's table expressed as a percentage of its average diameter. The last numerical variable is price. Coming to discrete variables we have cut describing the quality of diamond's cut: Fair, Good, Very Good, Premium, Ideal. The cut describes the symmetry proportioning and polish of the diamond. Then there is color of diamond ranged descending from D to J. The later letter in the alphabet the more yellow. And the last is clarity of particular diamond with possible values: FL,IF, VVS1, VVS2, VS1, VS2, SI1, SI2, I1, I2, I3 (ordering from best to worse). It refers to the absence of inclusions and blemishes.
+For this report, we have decided to analyze "Diamonds" dataset about the features and prices of stones which we have found on Kaggle [https://www.kaggle.com/shivam2503/diamonds]. It contains 54940 records and each one has 11 columns with different variables. First one is irrelevant because it's just index number. Then we have numerical variables - x, y, z that describe a size of a diamond in each of three dimensions. There is also weight given in carats. Today, a carat is equal to exactly 0.2 grams). Carat weight is unrelated to the similar sounding karat, which refers to gold's purity. Next, we have two variables describing percentage relation between appropriate measures within the diamond.
+Depth is the height of a diamond, measured from the culet to the table, divided by its average girdle diameter. The table is the width of the diamond's table expressed as a percentage of its average diameter. The last numerical variable is a price. Coming to discrete variables we have cut describing the quality of a diamond's cut: Fair, Good, Very Good, Premium, Ideal. The cut describes the symmetry proportioning and polish of the diamond. Then there is a color of diamond ranged descending from D to J. The later letter in the alphabet the more yellow. And the last is clarity of particular diamond with possible values: FL, IF, VVS1, VVS2, VS1, VS2, SI1, SI2, I1, I2, I3 (ordering from best to worse). It refers to the absence of inclusions and blemishes.
   
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Aim of analysis}
   
-  Jewelry is a kind of art made of expensive raw material. These art is based on precision and integrity but because of the fact that it is an art sometimes the defects increase the price. These defects make diamond unique and uniqueness is the main part of art. In our analyze we would like to check which features influence the price and at which level. Besides we are interested how important are all features that are influenced by jeweler(shape, cut) and that what are natural (color, clarity).
-The figure \ref{dist_price} is a visualization of distribution of prices. The chart shows that the most common are relatively cheap diamonds. Then if the price increase the diamond becomes rare.
+  Jewelry is a kind of art made of expensive raw material. This art is based on precision and integrity but because of the fact that it is an art sometimes, the defects increase the price. These defects make diamond unique and uniqueness is the main part of the art. In our analysis we would like to check which features influence the price and at which level. Besides we are interested in how important are all features that are influenced by a jeweler(shape, cut) and that what is natural (color, clarity).
+The figure \ref{dist_price} is a visualization of the distribution of prices. The chart shows that the most common are relatively cheap diamonds. Then if the price increase the diamond becomes rare.
 
 <<reading_data, echo=FALSE>>=
 diamonds_data = read.csv("diamonds.csv", header = TRUE)
@@ -80,7 +80,7 @@ ggplot(data=diamonds_data) + geom_histogram(binwidth=200, aes(x=diamonds_data$pr
   
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data preprocessing}
-  This, first step of working with data we started from removing unnecessary variables. We remove the index column, because it is irrelevant information. Then we looked for missing data. Dataset didn't contain any NaNs, but some values were impossible to occur in reality. To handle such situations we changed every zero from x, y or z column to NA, because this will make our upcoming work easier. We also checked if other numerical columns contain zeros, but they didn't. Next,we focused on ensuring that categorical variables don't contain typos. In order to do that we just looked at all values they take, but there wasn't need any cleaning. We didn't deal with outliers, because we will do it within next steps of analysis.
+  The first step of working with data we started from removing unnecessary variables. We remove the index column because it is irrelevant information. Then we looked for missing data. Dataset didn't contain any NaNs, but some values were impossible to occur in reality. To handle such situations we changed every zero from x, y or z column to NA, because this will make our upcoming work easier. We also checked if other numerical columns contain zeros, but they didn't. Next, we focused on ensuring that categorical variables don't contain typos. In order to do that, we just looked at all values they take, but there wasn't need any cleaning. We didn't deal with outliers, because we will do it within next steps of analysis.
 
 
 <<data_preprocessing, echo=TRUE, eval=TRUE>>=
@@ -98,7 +98,7 @@ summary(diamonds_data$color)
 summary(diamonds_data$clarity)
 @
 
-Before we started fitting the model we have made quick look on the data. In figures [????????????] and  we can see  histograms and box plots. The plot of depth is symmetric similar to the bell curve. The next one (x) is much more dispersed. The distributions of y, z and especially table shows that this data are have small differences in each group. 
+Before we started fitting the model we have made quick look on the data. In figures [????????????] and  we can see  histograms and box plots. The plot of depth is symmetric similar to the bell curve. The next one (x) is much more dispersed. The distributions of y, z and especially table show that this data have small differences in each group. 
 
 
 \begin{figure}
@@ -152,10 +152,10 @@ points(seq(1, to=54000, by = 50), diamonds_data_omited$price[seq(1, to=54000, by
 legend(35000, 21000, legend=c("Fitted values", "Real values"), col=c("black", "red"), lty=3, cex=.8)
 @
     
-A the plot we can clearly see that there outliers, but we will handle it in next sections.
+At the plot we can clearly see that there outliers, but we will handle it in next sections.
 
 \subsection{Additional categorical variables}
-  In case of additional categorical variables we used very similar approach as in continuous variables. But this time we increased maximum number of variables to 4 and considered Gaussian family. The best model we have found is: 
+  In case of additional categorical variables, we used a very similar approach as in continuous variables. But this time we increased maximum number of variables to 4 and considered Gaussian family. The best model we have found is: 
   \begin{equation}
       \text{cost} = -1016.9 x + 11192.5 \text{carat}  + C_i + D_i - 2826.4,
     \end{equation}
@@ -303,14 +303,14 @@ Model with interactions                              & 4                   & 884
     
      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Check significance of parameters}
-    To check if all parameters in our models are significant we use function summary called at the best  model that we find. Than we look at the significance codes and we can find out what parameters are significant. The all summaries are shown below:
+    To check if all parameters in our models are significant we use function summary called at the best model that we find. Then we look at the significance codes and we can find out what parameters are significant. All summaries are shown below:
     
 <<significance_checking, echo=TRUE, eval=TRUE>>=
 summary(model_simple_out)
 summary(model_middle)
 summary(model_complex)
 @
-  For two other models we do the same analysis. It turns out that in all models that were fitted by us all parameters are significant. It means that we shouldn't get rid of them.
+  For two other models, we do the same analysis. It turns out that in all models that were fitted by us all parameters are significant. It means that we shouldn't get rid of them.
   
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusions}
