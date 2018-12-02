@@ -137,6 +137,7 @@ grid.arrange(p3, p2, p1, p4, nrow = 2)
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \section{Model fitting}
     \subsection{Continuous variables}
+    
     To fit model to data we use function glmulti from package glmulti. To reduce complexity of model at this step we decided to choose maximum number of used variables to 3. We checked models with different distribution families. These were Gaussian, Poisson and Gamma. It turned out that Gamma model provides the best fit under the BIC criteria. The formula of this model is as follows:
     \begin{equation}
       \text{cost} = -1.0777 \text{carat} + 0.5714 z  + 0.9717 x +  1.0882.
