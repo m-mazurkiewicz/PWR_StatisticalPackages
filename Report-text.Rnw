@@ -98,11 +98,11 @@ summary(diamonds_data$color)
 summary(diamonds_data$clarity)
 @
 
-Before we started fitting the model whe have made quick look on the data. In figures \ref{dist_continous} and \ref{dist_categorical} we can see the histograms and boxplots. The plot of depth is symetric similar to the bell curve. The next one (x) is much more dispersed. The distributions of y, z and espessialy table shows that this data are have small differences in each group. 
+Before we started fitting the model whe have made quick look on the data. In figures  and  we can see te histograms and boxplots. The plot of depth is symetric similar to the bell curve. The next one (x) is much more dispersed. The distributions of y, z and espessialy table shows that this data are have small differences in each group. 
 
 
 \begin{figure}
-\center
+\begin{center}
 <<data_visualisation_continous_variables, fig=TRUE, fig.width=11cm , echo=False>>=
 p1 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$depth))  + xlab("Depth") + ylab("Frequency") + theme_minimal()
 p2 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$x))  + xlab("x") + ylab("") + theme_minimal()
@@ -114,7 +114,7 @@ grid.arrange(p1, p2, p3, p4, p5, p6, nrow = 2)
 @
 \label{dist_continous}
 \caption{Distributions of each of continous variables}
-
+\end{center}
 \end{figure}
 
 \begin{figure}
@@ -131,8 +131,9 @@ grid.arrange(p3, p2, p1, p4, nrow = 2)
 @
 \label{dist_categorical}
 \caption{Boxplots of price depending on values of categorical variables and the corelation chart between each two variables}
-
+\end{center}
 \end{figure}
+
 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \section{Model fitting}
@@ -222,15 +223,19 @@ points(diamonds_data_omited$price, col = 'red')
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Check model assumptions}
-    We checked if fitted models fulfill appropriate assumptions. It turns out that none of them do, but we will assume that they do. On the plots below we can see that non of them has normally distributed residuals. Chart 'Residuals vs Fitted' present the distribution of residuals which should be placed around 0. In each of our model the assumption about homogenity is not meet.The normal Q-Q shows if your residuals are normally distributed. Residuals should go around the diagonal line but in ur cases they are not. Cook's distance for residuals helps to detect outliers. They are visible in our cases and we try to handle them in next step of our analysis. Scale location - to describe!!!!!
-[Tu bym chciała, żeby pojawiły się tylko wykresy o kótrych wspominamy w tekście]    
-<<model_assumptions, fig=TRUE, echo=FALSE, eval=TRUE>>=
+    We checked if fitted models fulfill appropriate assumptions. It turns out that none of them do, but we will assume that they do. On the plots below we can see that non of them has normally distributed residuals. Chart 'Residuals vs Fitted' present the distribution of residuals which should be placed around 0. In each of our model the assumption about homogenity is not meet.The normal Q-Q shows if your residuals are normally distributed. Residuals should go around the diagonal line but in ur cases they are not. Cook's distance for residuals helps to detect outliers. They are visible in our cases and we try to handle them in next step of our analysis. Scale location - to describe!!!!!  
+
+<<model_assumptions_simple, fig=TRUE, echo=FALSE, eval=TRUE>>=
 layout(matrix(1:4, byrow = T, ncol = 2))
 plot(model_simple, which = 1:4)
-    
+@
+
+<<model_assumptions_midd, fig=TRUE, echo=FALSE, eval=TRUE>>=
 layout(matrix(1:4, byrow = T, ncol = 2))
 plot(model_middle, which = 1:4)
-    
+@
+
+<<model_assumptions_complex, fig=TRUE, echo=FALSE, eval=TRUE>>=
 layout(matrix(1:4, byrow = T, ncol = 2))
 plot(model_complex, which = 1:4)
 @
@@ -256,9 +261,15 @@ outliers_indexes_from_complex <- strtoi(labels(outliers_from_complex$p))
 diamonds_data_omited_simplout <- diamonds_data_omited[-c(outliers_indexes_from_simple), ]
 model_simple_out <- glm(formula = price~z+x+carat, data = diamonds_data_omited_simplout,
                         family = Gamma(link = 'log'))
-
-
 @
+\begin{figure}
+\begin{center}
+<<model_without_outliers, echo=FALSE, fig=TRUE, eval=TRUE>>=
+layout(matrix(1:4, byrow = T, ncol = 2))
+plot(model_simple_out, which = 1:4)
+@
+\end{center}
+\end{figure}
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Order models}
