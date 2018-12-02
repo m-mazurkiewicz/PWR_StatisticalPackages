@@ -13,10 +13,20 @@
 \begin{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 <<global_settings, echo=FALSE, warning=FALSE, include = FALSE>>=
-  library(knitr)
-  library(car)
-  opts_chunk$set(fig.path='figure/', fig.align='center', fig.pos='H',fig.width=5, fig.height=4)
-  opts_knit$set(root.dir = getwd())
+library(knitr)
+library(car)
+library(ggplot2)
+library(gridExtra)
+packages<-function(x){
+  x<-as.character(match.call()[[2]])
+  if (!require(x,character.only=TRUE)){
+    install.packages(pkgs=x,repos="http://cran.r-project.org")
+    require(x,character.only=TRUE)
+  }
+}
+
+opts_chunk$set(fig.path='figure/', fig.align='center', fig.pos='H',fig.width=5, fig.height=4)
+opts_knit$set(root.dir = getwd())
 @
     
   
@@ -60,7 +70,6 @@ Depth is the height of a diamond, measured from the culet to the table, divided 
 diamonds_data = read.csv("diamonds.csv", header = TRUE)
 @
 
-
 <<data_preprocessing, echo=TRUE, eval=TRUE>>=
 diamonds_data <- diamonds_data[2:11] #data cleaning - removing unnecessary variables
 #changing 0 to NAs
@@ -75,6 +84,27 @@ summary(diamonds_data$cut)
 summary(diamonds_data$color)
 summary(diamonds_data$clarity)
 @
+
+<<data_visualisation_continous_variables, fig=TRUE, fig.width=11cm , echo=False>>=
+p1 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$depth))  + xlab("Depth") + ylab("Frequency") + theme_minimal()
+p2 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$x))  + xlab("x") + ylab("") + theme_minimal()
+p3 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$y))  + xlab("y") + ylab("") + theme_minimal()
+p4 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$z))  + xlab("z") + ylab("") + ylab("Frequency") + theme_minimal()
+p5 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$carat))  + xlab("Carat") + ylab("") + theme_minimal()
+p6 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$table))  + xlab("Table") + ylab("") + theme_minimal()
+grid.arrange(p1, p2, p3, p4, p5, p6, nrow = 2)
+@
+
+<<data_visualisation_categorical_variables, fig=TRUE , fig.width=11, echo=False>>=
+p1 <- qplot(x = cut, y = price, data = diamonds,
+      geom = 'boxplot') + coord_cartesian(ylim = c(0, 8000))
+p2 <- qplot(x = color, y = price, data = diamonds,
+      geom = 'boxplot') + coord_cartesian(ylim = c(0, 8000))
+p3 <- qplot(x = clarity, y = price, data = diamonds,
+      geom = 'boxplot') + coord_cartesian(ylim = c(0, 8000))
+grid.arrange(p3, p2, p1, nrow = 2)
+@
+
   
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \section{Model fitting}
@@ -84,7 +114,7 @@ summary(diamonds_data$clarity)
       \text{cost} = -1.0777 \text{carat} + 0.5714 z  + 0.9717 x +  1.0882.
     \end{equation}
     
-<<model_simple, echo=TRUE, eval=TRUE>>=
+<<model_simple, fig=TRUE, echo=TRUE, eval=TRUE>>=
 model_simple <- glm(formula = price~z+x+carat, data = diamonds_data_omited,
                     family = Gamma(link = 'log'))
 plot(model_simple$fitted.values)
@@ -115,7 +145,7 @@ A the plot we can clearly see that there outliers, but we will handle it in next
   \end{tabular}
   \end{table}
   
-<<model_middle, echo=FALSE, eval=TRUE>>=
+<<model_middle, fig=TRUE, echo=FALSE, eval=TRUE>>=
 model_middle <- glm(formula = price~color+clarity+x+carat, data = diamonds_data_omited,
                     family = gaussian())
 plot(model_middle$fitted.values)
@@ -148,7 +178,7 @@ coefficient        & 6891.3 & 3657.7 & 2664.9 & 4883.4 & 4448.8 & 6154.9 & 5788.
 \end{tabular}
 \end{table}
 
-<<model_complex, echo=FALSE, eval=TRUE>>=
+<<model_complex, fig=TRUE, echo=FALSE, eval=TRUE>>=
 model_complex <- glm(formula = price~carat + carat:x + carat:color + carat:clarity,
                      data = diamonds_data_omited, family = gaussian())
 plot(model_complex$fitted.values)
@@ -165,7 +195,7 @@ points(diamonds_data_omited$price, col = 'red')
 \section{Check model assumptions}
     We checked if fitted models fulfill appropriate assumptions. It turns out that none of them do, but we will assume that they do. On the plots below we can see that non of them has normally distributed residuals. Chart 'Residuals vs Fitted' present the distribution of residuals which should be placed around 0. In each of our model the assumption about homogenity is not meet.The normal Q-Q shows if your residuals are normally distributed. Residuals should go around the diagonal line but in ur cases they are not. Cook's distance for residuals helps to detect outliers. They are visible in our cases and we try to handle them in next step of our analysis. Scale location - to describe!!!!!
 [Tu bym chciała, żeby pojawiły się tylko wykresy o kótrych wspominamy w tekście]    
-<<model assumptions, echo=FALSE, eval=TRUE>>=
+<<model assumptions, fig=TRUE, echo=FALSE, eval=TRUE>>=
 layout(matrix(1:4, byrow = T, ncol = 2))
 plot(model_simple, which = 1:4)
     
