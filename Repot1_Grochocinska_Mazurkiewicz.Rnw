@@ -1,0 +1,353 @@
+\documentclass{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[utf8]{inputenc}
+\usepackage[top=3cm, bottom=3cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[colorlinks=true, linkcolor=blue]{hyperref}
+\usepackage{amsmath,amsthm,amsfonts,amssymb}
+\usepackage{wrapfig}
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+<<global_settings, echo=FALSE, warning=FALSE, include = FALSE>>=
+library(knitr)
+#library(tools)      THESE 2 LINES MAY HELP
+#names(vignetteEngine(package = 'knitr'))
+library(car)
+library(ggplot2)
+library(gridExtra)
+library(GGally)
+packages<-function(x){    #************
+  x<-as.character(match.call()[[2]])
+  if (!require(x,character.only=TRUE)){
+    install.packages(pkgs=x,repos="http://cran.r-project.org")
+    require(x,character.only=TRUE)
+  }
+}  #************
+
+opts_chunk$set(fig.path='figure/', fig.align='center', fig.pos='H',fig.width=5, fig.height=4)
+opts_knit$set(root.dir = getwd()) #************
+@
+    
+%\definecolor{shadecolor}{gray}{0.90} %Other possible way to make gray background for code, but then there is need to add \begin{shaded} and \end{shaded} around that part of code
+\SweaveOpts{concordance=TRUE} %#************
+  
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % strona tytulowa
+\title{Statistical packages - report 1}
+\author{Urszula Grochocińska, Marcin Mazurkiewicz}
+\maketitle
+\tableofcontents 
+
+  
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+\begin{wrapfigure}{l}{0.4\textwidth} 
+\vspace{0.2cm}
+\begin{center}
+\includegraphics[width=0.35\textwidth]{diamondanatomyimproved.jpg}
+\caption{Anatomy of diamond. \textit{source: https://www.everything-wedding-rings.com}}
+\label{fig:databaseUserTable}
+\end{center}
+\end{wrapfigure} 
+
+For this report, we have decided to analyze "Diamonds" dataset about the features and prices of stones which we have found on Kaggle [https://www.kaggle.com/shivam2503/diamonds]. It contains 54940 records and each one has 11 columns with different variables. First one is irrelevant because it's just index number. Then we have numerical variables - x, y, z that describe a size of a diamond in each of three dimensions. There is also weight given in carats. Today, a carat is equal to exactly 0.2 grams. Carat weight is unrelated to the similar sounding karat, which refers to gold's purity. Next, we have two variables describing percentage relation between appropriate measures within the diamond.
+Depth is the height of a diamond, measured from the culet to the table, divided by its average girdle diameter. The table is the width of the diamond's table expressed as a percentage of its average diameter. The last numerical variable is a price. Coming to discrete variables we have cut describing the quality of a diamond's cut: Fair, Good, Very Good, Premium, Ideal. The cut describes the symmetry proportioning and polish of the diamond. Then there is a color of diamond ranged descending from D to J. The later letter in the alphabet the more yellow is the diamond. And the last is clarity of particular diamond with possible values: FL, IF, VVS1, VVS2, VS1, VS2, SI1, SI2, I1, I2, I3 (ordering from best to worse). It refers to the absence of inclusions and blemishes.
+  
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Aim of analysis}
+  
+  Jewelry is a kind of art made of expensive raw material. This art is based on precision and integrity but because of the fact that it is an art sometimes, the defects increase the price. These defects make diamond unique and uniqueness is the main part of the art. In our analysis we would like to check which features influence the price and at which level. Besides we are interested in how important are all features that are influenced by a jeweler(shape, cut) and that what is natural (color, clarity).
+The figure \ref{dist_price} is a visualization of the distribution of prices. The chart shows that the most common are relatively cheap diamonds. Then if the price increase the diamond becomes rare.
+
+<<reading_data, echo=FALSE>>=
+diamonds_data = read.csv("diamonds.csv", header = TRUE)
+@
+
+\begin{figure}
+\center
+<<data_visualisation_price, fig=TRUE, fig.hight=5cm , echo=False>>=
+ggplot(data=diamonds_data) + geom_histogram(binwidth=200, aes(x=diamonds_data$price))  + xlab("price") + ylab("Frequency") + theme_minimal()
+
+@
+\label{dist_price}
+\caption{Distribution of values of price in our dataset}
+\end{figure}
+  
+  
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Data preprocessing}
+  As a first step of working with data we start from removing unnecessary variables. We remove the index column because it is irrelevant information. Then we look for missing data. Dataset doesn't contain any NaNs, but some values are impossible to occur in reality. To handle such situations we change every zero from x, y or z column to NA, because this makes our upcoming work easier. We also check if other numerical columns contain zeros, but they don't. Next, we focus on ensuring that categorical variables don't contain typos. In order to do that, we just look at all values they take, but there is no need for cleaning. We don't deal with outliers, because this is part of further steps in our analysis.
+
+
+<<data_preprocessing, echo=TRUE, eval=TRUE>>=
+diamonds_data <- diamonds_data[2:11] #data cleaning - removing unnecessary variables
+#changing 0 to NAs
+diamonds_data$z[diamonds_data$z==0] = NA
+diamonds_data$x[diamonds_data$x==0] = NA
+diamonds_data$y[diamonds_data$y==0] = NA
+any(is.na(diamonds_data)) #check if there are any nulls in our dataset
+diamonds_data_omited <- na.omit(diamonds_data)
+    
+#checking for typos
+summary(diamonds_data$cut)
+summary(diamonds_data$color)
+summary(diamonds_data$clarity)
+@
+
+Before we start fitting the model we make quick look on the data. In figures \ref{dist_continous} and \ref{dist_categorical} we can see  histograms and box plots. The plot of depth is symmetric similar to the bell curve. The next one (x) is much more dispersed. The distributions of y, z and especially table show that this data have small differences in each group. 
+
+
+\begin{figure}
+\begin{center}
+<<data_visualisation_continous_variables, fig=TRUE, fig.width=12cm , echo=False>>=
+p1 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$depth))  + xlab("Depth") + ylab("Frequency") + theme_minimal()
+p2 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$x))  + xlab("x") + ylab("") + theme_minimal()
+p3 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$y))  + xlab("y") + ylab("") + theme_minimal()
+p4 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$z))  + xlab("z") + ylab("") + ylab("Frequency") + theme_minimal()
+p5 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$carat))  + xlab("Carat") + ylab("") + theme_minimal()
+p6 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$table))  + xlab("Table") + ylab("") + theme_minimal()
+grid.arrange(p1, p2, p3, p4, p5, p6, nrow = 3)
+@
+\label{dist_continous}
+\caption{Distributions of each of continuous variables}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+<<data_visualisation_categorical_variables, fig.cap = paste('Boxplots of price depending on values of categorical variables'), fig=TRUE , fig.width=14, echo=False>>=
+p1 <- qplot(x = cut, y = price, data = diamonds,
+      geom = 'boxplot') + coord_cartesian(ylim = c(0, 8000))
+p2 <- qplot(x = color, y = price, data = diamonds,
+      geom = 'boxplot') + coord_cartesian(ylim = c(0, 8000))
+p3 <- qplot(x = clarity, y = price, data = diamonds,
+      geom = 'boxplot') + coord_cartesian(ylim = c(0, 8000))
+p4 <- ggcorr(diamonds_data_omited)
+grid.arrange(p3, p2, p1, p4, nrow = 2)
+@
+\label{dist_categorical}
+\caption{Boxplots of price depending on values of categorical variables and the correlation chart between each two variables}
+\end{center}
+\end{figure}
+
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \section{Model fitting}
+    \subsection{Continuous variables}
+    
+    To fit model to data we use function glmulti from package glmulti. To reduce complexity of model at this step we decide to choose maximum number of used variables to 3. We check models with different distribution families. These are Gaussian, Poisson and Gamma. It turns out that Gamma model provides the best fit under the BIC criteria. In first model the function which finds the best model under AIC critera choose two size variables: x, z and the carat. In the figure \ref{simp_model_fit} is shown the output of the model. Because of the fact that our dataset has about 10k records we have ploted only a part of them. The visible results of the model cover the real values.
+    
+<<model_simple, echo=TRUE, eval=TRUE>>=
+model_simple <- glm(formula = price~z+x+carat, data = diamonds_data_omited,
+                    family = Gamma(link = 'log'))
+@
+
+\begin{figure}
+\begin{center}
+<<data_visualisation_categorical_variables, fig.cap = paste('Boxplots of price depending on values of categorical variables'), fig=TRUE , fig.width=14, echo=False>>=
+plot(seq(1, to=54000, by = 50), model_simple$fitted.values[seq(1, to=54000, by = 50)], cex=.8, xlab = 'Number of observation', ylab = 'Diamond price')
+points(seq(1, to=54000, by = 50), diamonds_data_omited$price[seq(1, to=54000, by = 50)], col = 'red', pch = '.', cex=2)
+legend(35000, 21000, legend=c("Fitted values", "Real values"), col=c("black", "red"), lty=3, cex=.8)
+@
+\label{simp_model_fit}
+\caption{Result of GLM fit and real data in a model with continious and categorical variables}
+\end{center}
+\end{figure}
+    
+At the plot we can clearly see that there are outliers, but we handle them in next sections.
+
+\subsection{Additional categorical variables}
+  In case of additional categorical variables, we use a very similar approach as in continuous variables. But this time we increase the maximum number of variables to 4 and consider Gaussian family. The best model we find consists of two continous variables: x, carat and two categorical: color and clarity. It has different coefficients. For the x variable it is equal to -1016.9, for carat it is on the level 11192.5. The coeficetnts for categorical variables are shown in the table \ref{tab:colors_coefficients} (for colors) and table \ref{tab:clarity_coefficients} (for clarity). Similar as in the first case we plot \ref{mid_model_fit} the choosen points of real prices and the calculated points from model. Also in this case the fited linas cover the real values. 
+    
+  \begin{table}[]
+  \begin{tabular}{l|llllll}
+  color(C_i) & E      & F      & G      & H      & I       & J       \\ \hline
+  coefficient  & -214.2 & -282.6 & -486.8 & -993.2 & -1477.5 & -2397.4
+  \end{tabular}
+  \caption{Table with coefficients of color depending on type of diamond's color.}
+  \label{tab:colors_coefficients}
+  \end{table}
+    
+    
+  \begin{table}[]
+  \begin{tabular}{l|lllllll}
+  clarity(D_i) & IF     & SI1    & SI2    & VS1    & VS2    & VVS1   & VVS2   \\ \hline
+  coefficient  & 5707.1 & 3922.3 & 2952.6 & 4878.2 & 4559.3 & 5339.5 & 5266.3
+  \end{tabular}
+  \caption{Table with coefficients of clarity depending on type of diamond's clarity.}
+  \label{tab:clarity_coefficients}
+  \end{table}
+  
+<<model_middle, echo=FALSE, eval=TRUE>>=
+model_middle <- glm(formula = price~color+clarity+x+carat, data = diamonds_data_omited,
+                    family = gaussian())
+@
+\begin{figure}
+\begin{center}
+<<data_visualisation_categorical_variables, fig.cap = paste('Boxplots of price depending on values of categorical variables'), fig=TRUE , fig.width=14, echo=False>>=
+plot(seq(1, to=54000, by = 50), model_middle$fitted.values[seq(1, to=54000, by = 50)], cex=.8, xlab = 'Number of observation', ylab = 'Diamond price')
+points(seq(1, to=54000, by = 50), diamonds_data_omited$price[seq(1, to=54000, by = 50)], col = 'red', pch = '.', cex=2)
+legend(35000, 23000, legend=c("Fitted values", "Real values"), col=c("black", "red"), lty=3, cex=.8)
+@
+\label{mid_model_fit}
+\caption{Result of GLM fit and real data in a model with continious and categorical variables}
+\end{center}
+\end{figure}
+
+  
+  
+\subsection{Model with additional interactions}
+  To find model with additional interactions we use very similar approach as in previous cases. Maximum number of variables is 4 and the family is Gaussian. The best model we find consists of two continous variables: x, carat and two categorical: color and clarity. It has different coefficients. For the x with interaction with carat the coeficient is equal to 1527.5, for single carat it is on the level - 6912.8. The coeficetnts for categorical variables are shown in the table \ref{tab:colors_and_carat_coefficients} (for colors with carat interaction) and table \ref{tab:clarity_and_carat_coefficients} (for clarity with carat interaction). Similar as in the first case we plot \ref{complex_model_fit} the choosen points of real prices and the calculated points from model. As in previous cases the difference beetween model is not visible on the plot.
+  
+    \begin{equation}
+      \text{cost} =  - 6912.8\ \text{carat} + 1527.5\ \text{carat} \cdot x + C_i + D_i - 783.9,
+    \end{equation}
+  
+  
+  \begin{table}[]
+  \centering
+\begin{tabular}{l|llllll}
+carat $\cdot$ color(C_i) & E      & F      & G      & H       & I       & J       \\ \hline
+coefficient      & -219.1 & -342.1 & -737.5 & -1373.5 & -1920.8 & -2786.8
+\end{tabular}
+\caption{Table with coefficients of carat $\cdot$ color depending on type of diamond's color.}
+\label{tab:colors_and_carat_coefficients}
+\end{table}
+  
+  
+  \begin{table}[]
+  \centering
+\begin{tabular}{l|lllllll}
+carat $\cdot$ clarity(D_i) & IF     & SI1    & SI2    & VS1    & VS2    & VVS1   & VVS2   \\ \hline
+coefficient        & 6891.3 & 3657.7 & 2664.9 & 4883.4 & 4448.8 & 6154.9 & 5788.6
+\end{tabular}
+\caption{Table with coefficients of carat $\cdot$ clarity depending on type of diamond's clarity.}
+\label{tab:clarity_and_carat_coefficients}
+\end{table}
+
+<<model_complex, fig=TRUE, echo=FALSE, eval=TRUE, fig.cap='Result of GLM fit and real data in a model with additional interactions between variables.'>>=
+model_complex <- glm(formula = price~carat + carat:x + carat:color + carat:clarity,
+                     data = diamonds_data_omited, family = gaussian())
+@
+\begin{figure}
+\begin{center}
+<<data_visualisation_categorical_variables, fig.cap = paste('Boxplots of price depending on values of categorical variables'), fig=TRUE , fig.width=14, echo=False>>=
+plot(seq(1, to=54000, by = 50), model_complex$fitted.values[seq(1, to=54000, by = 50)],  cex=.8, xlab = 'Number of observation', ylab = 'Diamond price')
+points(seq(1, to=54000, by = 50), diamonds_data_omited$price[seq(1, to=54000, by = 50)], col = 'red', pch = '.', cex=2)
+legend(35000, 22000, legend=c("Fitted values", "Real values"), col=c("black", "red"), lty=3, cex=.8)
+@
+\label{complex_model_fit}
+\caption{Result of GLM fit and real data in a model with continious and categorical variables}
+\end{center}
+\end{figure}
+
+  
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Other models}
+    To find those three models from previous section we use glmulti function from glmulti package. Thus we take into consideration all models with specific restrictions. We set maximum model size to 3 in case with only continuous variables and to 4 in the rest of cases. 
+    
+    We use glmulti function to find all of considered models. But it turned out, that in second and third case the best model doesn't include z variable. That arouses our curiosity if model excluding this variable is significantly better than with it. Under BIC criteria best model with categorical variables with additional z is only 0.02 \% better than without it. Although it gives better BIC it contains more variables so it may be considered as worse model. 
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Check model assumptions}
+    We check if fitted models fulfill appropriate assumptions. It turns out that each of them is far from having normal distributed residulas or being homogenous. On the plots below \ref{simple_model_res}, \ref{mid_model_res} and \ref{complex_model_res} we can see that non of them has normally distributed residuals. Chart 'Residuals vs Fitted' present the distribution of residuals which should be placed around 0. In each of our model the assumption about homogeneity is not met.The normal Q-Q shows if your residuals are normally distributed. Residuals should go around the diagonal line but in our cases they are not. Cook's distance for residuals helps to detect outliers. They are visible in our cases and we try to handle them in next step of our analysis.
+
+\begin{figure}
+\begin{center}
+<<model_assumptions_simple, fig=TRUE, echo=FALSE, eval=TRUE, fig.cap='Charts used to check the assumptions of a model containing only continuous variables.'>>=
+layout(matrix(1:4, byrow = T, ncol = 2))
+plot(model_simple, which = 1:4)
+@
+\label{simple_model_res}
+\caption{Charts presenting residual analysis for model only with continous variables}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+<<model_assumptions_midd, fig=TRUE, echo=FALSE, eval=TRUE, fig.cap='Charts used to check the assumptions of a model containing continuous and categorical variables.'>>=
+layout(matrix(1:4, byrow = T, ncol = 2))
+plot(model_middle, which = 1:4)
+@
+\label{mid_model_res}
+\caption{Charts presenting residual analysis for model with continous and categorical variables}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+<<model_assumptions_complex, fig=TRUE, echo=FALSE, eval=TRUE, fig.cap='Charts used to check the assumptions of a model with additional interactions between variables.'>>=
+layout(matrix(1:4, byrow = T, ncol = 2))
+plot(model_complex, which = 1:4)
+@
+\label{complex_model_res}
+\caption{Charts presenting residual analysis for model with interactions}
+\end{center}
+\end{figure}
+
+    
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Outliers handling}
+    To find outliers in our fits we use outlierTest function. It provides us a list of most significant outliers. We decide to delete outliers that are too far from rest of the data. This decision is made because of the fact that this observations are much different then others in only chosen characteristics and it could be the mistake. After that we tried to fit the best model again.
+    
+<<outliers, echo=FALSE, eval=TRUE>>=
+outliers_from_simple <- outlierTest(model_simple, n.max = 30) #it computes Bonferroni Outlier Test and prints max values
+outliers_indexes_from_simple <- strtoi(labels(outliers_from_simple$p)) #indexes of outliers
+
+diamonds_data_omited_simplout <- na.omit(diamonds_data[-c(outliers_indexes_from_simple), ])
+model_simple_out <- glm(formula = price~z+x+carat, data = diamonds_data_omited_simplout,
+                        family = Gamma(link = 'log'))
+@
+After removing outliers we did the residual analysis once more. The results are presented on the charts \ref{simple_out_model_res}. We could see that the result are better, for example the red line chart 'Residuals vs Fitted' is closer to the dashed one which meens that they are closer to the normal distribution.
+
+\begin{figure}
+\begin{center}
+<<model_without_outliers, echo=FALSE, fig=TRUE, eval=TRUE, fig.cap='Charts used to check the assumptions of a model containing only continiuous variables after outliers deletion.'>>=
+layout(matrix(1:4, byrow = T, ncol = 2))
+plot(model_simple_out, which = 1:4)
+@
+\label{simple_out_model_res}
+\caption{Charts presenting residual analysis for model only with continous variables but without outliers}
+\end{center}
+\end{figure}
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Order models}
+    It turns out that the best fit we manage to make is with the simplest model with just continuous variables. It becomes even more accurate when we delete outliers. The worst fit of those three models is obtained for the model with continuous and categorical variables, but without interactions. The most complex model with additional interactions gives fit somewhere between two previous ones. 
+
+\begin{table}[]
+\centering
+\begin{tabular}{l|c|c|c}
+                                                     & number of variables & AIC    & \begin{tabular}[c]{@{}c@{}}difference between the model \\ and the best model\end{tabular} \\ \hline
+\begin{tabular}[c]{@{}l@{}}Model with only continuous\\variables without outliers\end{tabular} 
+ & 3                   & 848300 & 0.0\%                                                                                      \\
+\begin{tabular}[c]{@{}l@{}}Model with only continuous\\variables with outliers\end{tabular}      & 3                   & 848800 & -0.06\%                                                                                    \\
+\begin{tabular}[c]{@{}l@{}}Model with only continuous\\and categorical variables\end{tabular}     & 4                   & 912700 & -7.6\%                                                                                     \\
+Model with interactions                              & 4                   & 884100 & -4.2\%                                                                                    
+\end{tabular}
+\caption{Comparison of 4 models from analysis}
+\label{tab:models_comparison}
+\end{table}
+
+    
+     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Check significance of parameters}
+    To check if all parameters in our models are significant we use function summary called at the best model that we find. Then we look at the significance codes and we can find out what parameters are significant. All summaries are shown below:
+    
+<<significance_checking, echo=TRUE, eval=TRUE>>=
+summary(model_simple_out)
+summary(model_middle)
+summary(model_complex)
+@
+  It turns out that in all models that were fitted by us all parameters are significant. It means that we shouldn't get rid of them.
+  
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusions}
+    
+  
+  \end{document}
