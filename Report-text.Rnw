@@ -147,8 +147,8 @@ grid.arrange(p3, p2, p1, p4, nrow = 2)
 <<model_simple, fig=TRUE, echo=TRUE, eval=TRUE>>=
 model_simple <- glm(formula = price~z+x+carat, data = diamonds_data_omited,
                     family = Gamma(link = 'log'))
-plot(model_simple$fitted.values)
-points(diamonds_data_omited$price, col = 'red')
+plot(model_simple$fitted.values[seq(1, to=54000, by = 50)])
+points(diamonds_data_omited$price[seq(1, to=54000, by = 50)], col = 'red')
 @
     
 A the plot we can clearly see that there outliers, but we will handle it in next sections.
@@ -165,6 +165,8 @@ A the plot we can clearly see that there outliers, but we will handle it in next
   color(C_i) & E      & F      & G      & H      & I       & J       \\ \hline
   coefficient  & -214.2 & -282.6 & -486.8 & -993.2 & -1477.5 & -2397.4
   \end{tabular}
+  \caption{Table with coefficients of color depending on type of diamond's color.}
+  \label{tab:colors_coefficients}
   \end{table}
     
     
@@ -173,13 +175,15 @@ A the plot we can clearly see that there outliers, but we will handle it in next
   clarity(D_i) & IF     & SI1    & SI2    & VS1    & VS2    & VVS1   & VVS2   \\ \hline
   coefficient  & 5707.1 & 3922.3 & 2952.6 & 4878.2 & 4559.3 & 5339.5 & 5266.3
   \end{tabular}
+  \caption{Table with coefficients of clarity depending on type of diamond's clarity.}
+  \label{tab:clarity_coefficients}
   \end{table}
   
 <<model_middle, fig=TRUE, echo=FALSE, eval=TRUE>>=
 model_middle <- glm(formula = price~color+clarity+x+carat, data = diamonds_data_omited,
                     family = gaussian())
-plot(model_middle$fitted.values)
-points(diamonds_data_omited$price, col = 'red')
+plot(model_middle$fitted.values[seq(1, to=54000, by = 50)])
+points(diamonds_data_omited$price[seq(1, to=54000, by = 50)], col = 'red')
 @
   
   
@@ -197,6 +201,8 @@ points(diamonds_data_omited$price, col = 'red')
 carat $\cdot$ color(C_i) & E      & F      & G      & H       & I       & J       \\ \hline
 coefficient      & -219.1 & -342.1 & -737.5 & -1373.5 & -1920.8 & -2786.8
 \end{tabular}
+\caption{Table with coefficients of carat $\cdot$ color depending on type of diamond's color.}
+\label{tab:colors_and_carat_coefficients}
 \end{table}
   
   
@@ -206,13 +212,15 @@ coefficient      & -219.1 & -342.1 & -737.5 & -1373.5 & -1920.8 & -2786.8
 carat $\cdot$ clarity(D_i) & IF     & SI1    & SI2    & VS1    & VS2    & VVS1   & VVS2   \\ \hline
 coefficient        & 6891.3 & 3657.7 & 2664.9 & 4883.4 & 4448.8 & 6154.9 & 5788.6
 \end{tabular}
+\caption{Table with coefficients of carat $\cdot$ clarity depending on type of diamond's clarity.}
+\label{tab:clarity_and_carat_coefficients}
 \end{table}
 
 <<model_complex, fig=TRUE, echo=FALSE, eval=TRUE>>=
 model_complex <- glm(formula = price~carat + carat:x + carat:color + carat:clarity,
                      data = diamonds_data_omited, family = gaussian())
-plot(model_complex$fitted.values)
-points(diamonds_data_omited$price, col = 'red')
+plot(model_complex$fitted.values[seq(1, to=54000, by = 50)])
+points(diamonds_data_omited$price[seq(1, to=54000, by = 50)], col = 'red')
 @
   
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -279,11 +287,14 @@ plot(model_simple_out, which = 1:4)
 \centering
 \begin{tabular}{l|c|c|c}
                                                      & number of variables & AIC    & \begin{tabular}[c]{@{}c@{}}difference between the model \\ and the best model\end{tabular} \\ \hline
-Model with only continous variables without outliers & 3                   & 848300 & 0.0\%                                                                                      \\
-Model with only continous variables with outliers    & 3                   & 848800 & -0.06\%                                                                                    \\
-Model with continous and categorical variables       & 4                   & 912700 & -7.6\%                                                                                     \\
+\begin{tabular}[c]{@{}l@{}}Model with only continous\\variables without outliers\end{tabular} 
+ & 3                   & 848300 & 0.0\%                                                                                      \\
+\begin{tabular}[c]{@{}l@{}}Model with only continous\\variables with outliers\end{tabular}      & 3                   & 848800 & -0.06\%                                                                                    \\
+\begin{tabular}[c]{@{}l@{}}Model with only continous\\and categorical variables\end{tabular}     & 4                   & 912700 & -7.6\%                                                                                     \\
 Model with interactions                              & 4                   & 884100 & -4.2\%                                                                                    
 \end{tabular}
+\caption{Comparison of 4 models from analysis}
+\label{tab:models_comparison}
 \end{table}
 
     
