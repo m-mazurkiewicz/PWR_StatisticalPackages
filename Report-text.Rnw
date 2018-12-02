@@ -13,24 +13,26 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 <<global_settings, echo=FALSE, warning=FALSE, include = FALSE>>=
 library(knitr)
+#library(tools)      THESE 2 LINES MAY HELP
+#names(vignetteEngine(package = 'knitr'))
 library(car)
 library(ggplot2)
 library(gridExtra)
 library(GGally)
-packages<-function(x){
+packages<-function(x){    #************
   x<-as.character(match.call()[[2]])
   if (!require(x,character.only=TRUE)){
     install.packages(pkgs=x,repos="http://cran.r-project.org")
     require(x,character.only=TRUE)
   }
-}
+}  #************
 
 opts_chunk$set(fig.path='figure/', fig.align='center', fig.pos='H',fig.width=5, fig.height=4)
-opts_knit$set(root.dir = getwd())
+opts_knit$set(root.dir = getwd()) #************
 @
     
-  
-\SweaveOpts{concordance=TRUE}
+%\definecolor{shadecolor}{gray}{0.90} %Other possible way to make gray background for code, but then there is need to add \begin{shaded} and \end{shaded} around that part of code
+\SweaveOpts{concordance=TRUE} %#************
   
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % strona tytulowa
@@ -138,9 +140,9 @@ grid.arrange(p3, p2, p1, p4, nrow = 2)
     \section{Model fitting}
     \subsection{Continuous variables}
     
-    To fit model to data we use function glmulti from package glmulti. To reduce complexity of model at this step we decide to choose maximum number of used variables to 3. We check models with different distribution families. These are Gaussian, Poisson and Gamma. It turns out that Gamma model provides the best fit under the BIC criteria. The formula of this model is as follows[KEEP THESE FORMULAS OR NOT??????????]:
+    To fit model to data we use function glmulti from package glmulti. To reduce complexity of model at this step we decide to choose maximum number of used variables to 3. We check models with different distribution families. These are Gaussian, Poisson and Gamma. It turns out that Gamma model provides the best fit under the BIC criteria. The formula of this model is as follows[KEEP THESE FORMULAS OR NOT??????????]: 
     \begin{equation}
-      \text{cost} = -1.0777 \text{carat} + 0.5714 z  + 0.9717 x +  1.0882.
+      \text{cost} = -1.0777\ \text{carat} + 0.5714 z  + 0.9717 x +  1.0882.
     \end{equation}
     
 <<model_simple, fig=TRUE, echo=TRUE, eval=TRUE, fig.cap='Result of GLM fit and real data in a model with continious and categorical variables.'>>=
@@ -154,9 +156,9 @@ legend(35000, 21000, legend=c("Fitted values", "Real values"), col=c("black", "r
 At the plot we can clearly see that there are outliers, but we handle them in next sections.
 
 \subsection{Additional categorical variables}
-  In case of additional categorical variables, we use a very similar approach as in continuous variables. But this time we increase the maximum number of variables to 4 and consider Gaussian family. The best model we find is [??????]: 
+  In case of additional categorical variables, we use a very similar approach as in continuous variables. But this time we increase the maximum number of variables to 4 and consider Gaussian family. The best model we find is [??????]: [THOSE INDICATORS FOR CLARITY & COLOR I DON'T GET THEM]
   \begin{equation}
-      \text{cost} = -1016.9 x + 11192.5 \text{carat}  + C_i + D_i - 2826.4,
+      \text{cost} = -1016.9 x + 11192.5\ \text{carat}  + C_i + D_i - 2826.4,
     \end{equation}
     
     
@@ -192,7 +194,7 @@ legend(35000, 23000, legend=c("Fitted values", "Real values"), col=c("black", "r
   To find model with additional interactions we use very similar approach as in previous cases. Maximum number of variables is 4 and the family is Gaussian. That's how we find the following model:
   
     \begin{equation}
-      \text{cost} =  - 6912.8 \text{carat} + 1527.5 \text{carat} \cdot x + C_i + D_i - 783.9,
+      \text{cost} =  - 6912.8\ \text{carat} + 1527.5\ \text{carat} \cdot x + C_i + D_i - 783.9,
     \end{equation}
   
   
