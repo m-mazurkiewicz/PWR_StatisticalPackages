@@ -15,6 +15,7 @@ library(knitr)
 library(car)
 library(ggplot2)
 library(gridExtra)
+library(GGally)
 packages<-function(x){
   x<-as.character(match.call()[[2]])
   if (!require(x,character.only=TRUE)){
@@ -101,6 +102,10 @@ p2 <- qplot(x = color, y = price, data = diamonds,
 p3 <- qplot(x = clarity, y = price, data = diamonds,
       geom = 'boxplot') + coord_cartesian(ylim = c(0, 8000))
 grid.arrange(p3, p2, p1, nrow = 3)
+@
+
+<<correlation_plot, fig=TRUE , fig.width=6, echo=False>>=
+  ggcorr(diamonds_data_omited)
 @
 
   
