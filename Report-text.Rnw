@@ -103,14 +103,14 @@ Before we started fitting the model whe have made quick look on the data. In fig
 
 \begin{figure}
 \begin{center}
-<<data_visualisation_continous_variables, fig=TRUE, fig.width=11cm , echo=False>>=
+<<data_visualisation_continous_variables, fig=TRUE, fig.width=12cm , echo=False>>=
 p1 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$depth))  + xlab("Depth") + ylab("Frequency") + theme_minimal()
 p2 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$x))  + xlab("x") + ylab("") + theme_minimal()
 p3 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$y))  + xlab("y") + ylab("") + theme_minimal()
 p4 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$z))  + xlab("z") + ylab("") + ylab("Frequency") + theme_minimal()
 p5 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$carat))  + xlab("Carat") + ylab("") + theme_minimal()
 p6 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$table))  + xlab("Table") + ylab("") + theme_minimal()
-grid.arrange(p1, p2, p3, p4, p5, p6, nrow = 2)
+grid.arrange(p1, p2, p3, p4, p5, p6, nrow = 3)
 @
 \label{dist_continous}
 \caption{Distributions of each of continous variables}
@@ -119,7 +119,7 @@ grid.arrange(p1, p2, p3, p4, p5, p6, nrow = 2)
 
 \begin{figure}
 \begin{center}
-<<data_visualisation_categorical_variables, fig.cap = paste('Boxplots of price depending on values of categorical variables'), fig=TRUE , fig.width=11, echo=False>>=
+<<data_visualisation_categorical_variables, fig.cap = paste('Boxplots of price depending on values of categorical variables'), fig=TRUE , fig.width=14, echo=False>>=
 p1 <- qplot(x = cut, y = price, data = diamonds,
       geom = 'boxplot') + coord_cartesian(ylim = c(0, 8000))
 p2 <- qplot(x = color, y = price, data = diamonds,
@@ -266,7 +266,7 @@ outliers_indexes_from_middle <- strtoi(labels(outliers_from_middle$p))
 outliers_from_complex <- outlierTest(model_complex, n.max = 30)
 outliers_indexes_from_complex <- strtoi(labels(outliers_from_complex$p))
 
-diamonds_data_omited_simplout <- diamonds_data_omited[-c(outliers_indexes_from_simple), ]
+diamonds_data_omited_simplout <- na.omit(diamonds_data[-c(outliers_indexes_from_simple), ])
 model_simple_out <- glm(formula = price~z+x+carat, data = diamonds_data_omited_simplout,
                         family = Gamma(link = 'log'))
 @
