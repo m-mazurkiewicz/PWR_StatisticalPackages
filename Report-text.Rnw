@@ -144,7 +144,7 @@ grid.arrange(p3, p2, p1, p4, nrow = 2)
       \text{cost} = -1.0777 \text{carat} + 0.5714 z  + 0.9717 x +  1.0882.
     \end{equation}
     
-<<model_simple, fig=TRUE, echo=TRUE, eval=TRUE>>=
+<<model_simple, fig=TRUE, echo=TRUE, eval=TRUE, fig.cap='Result of GLM fit and real data in a model with continious and categorical variables.'>>=
 model_simple <- glm(formula = price~z+x+carat, data = diamonds_data_omited,
                     family = Gamma(link = 'log'))
 plot(model_simple$fitted.values[seq(1, to=54000, by = 50)])
@@ -179,7 +179,7 @@ A the plot we can clearly see that there outliers, but we will handle it in next
   \label{tab:clarity_coefficients}
   \end{table}
   
-<<model_middle, fig=TRUE, echo=FALSE, eval=TRUE>>=
+<<model_middle, fig=TRUE, echo=FALSE, eval=TRUE, fig.cap='Result of GLM fit and real data in a model with continious and categorical variables.'>>=
 model_middle <- glm(formula = price~color+clarity+x+carat, data = diamonds_data_omited,
                     family = gaussian())
 plot(model_middle$fitted.values[seq(1, to=54000, by = 50)])
@@ -216,7 +216,7 @@ coefficient        & 6891.3 & 3657.7 & 2664.9 & 4883.4 & 4448.8 & 6154.9 & 5788.
 \label{tab:clarity_and_carat_coefficients}
 \end{table}
 
-<<model_complex, fig=TRUE, echo=FALSE, eval=TRUE>>=
+<<model_complex, fig=TRUE, echo=FALSE, eval=TRUE, fig.cap='Result of GLM fit and real data in a model with additional interactions between variables.'>>=
 model_complex <- glm(formula = price~carat + carat:x + carat:color + carat:clarity,
                      data = diamonds_data_omited, family = gaussian())
 plot(model_complex$fitted.values[seq(1, to=54000, by = 50)])
@@ -233,17 +233,17 @@ points(diamonds_data_omited$price[seq(1, to=54000, by = 50)], col = 'red')
 \section{Check model assumptions}
     We checked if fitted models fulfill appropriate assumptions. It turns out that none of them do, but we will assume that they do. On the plots below we can see that non of them has normally distributed residuals. Chart 'Residuals vs Fitted' present the distribution of residuals which should be placed around 0. In each of our model the assumption about homogenity is not meet.The normal Q-Q shows if your residuals are normally distributed. Residuals should go around the diagonal line but in ur cases they are not. Cook's distance for residuals helps to detect outliers. They are visible in our cases and we try to handle them in next step of our analysis. Scale location - to describe!!!!!  
 
-<<model_assumptions_simple, fig=TRUE, echo=FALSE, eval=TRUE>>=
+<<model_assumptions_simple, fig=TRUE, echo=FALSE, eval=TRUE, fig.cap='Charts used to check the assumptions of a model containing only continuous variables.'>>=
 layout(matrix(1:4, byrow = T, ncol = 2))
 plot(model_simple, which = 1:4)
 @
 
-<<model_assumptions_midd, fig=TRUE, echo=FALSE, eval=TRUE>>=
+<<model_assumptions_midd, fig=TRUE, echo=FALSE, eval=TRUE, fig.cap='Charts used to check the assumptions of a model containing continuous and categorical variables.'>>=
 layout(matrix(1:4, byrow = T, ncol = 2))
 plot(model_middle, which = 1:4)
 @
 
-<<model_assumptions_complex, fig=TRUE, echo=FALSE, eval=TRUE>>=
+<<model_assumptions_complex, fig=TRUE, echo=FALSE, eval=TRUE, fig.cap='Charts used to check the assumptions of a model with additional interactions between variables.'>>=
 layout(matrix(1:4, byrow = T, ncol = 2))
 plot(model_complex, which = 1:4)
 @
@@ -272,7 +272,7 @@ model_simple_out <- glm(formula = price~z+x+carat, data = diamonds_data_omited_s
 @
 \begin{figure}
 \begin{center}
-<<model_without_outliers, echo=FALSE, fig=TRUE, eval=TRUE>>=
+<<model_without_outliers, echo=FALSE, fig=TRUE, eval=TRUE, fig.cap='Charts used to check the assumptions of a model containing only continiuous variables after outliers deletion.'>>=
 layout(matrix(1:4, byrow = T, ncol = 2))
 plot(model_simple_out, which = 1:4)
 @
