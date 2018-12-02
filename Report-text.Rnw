@@ -1,3 +1,4 @@
+
 \documentclass{article}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -9,6 +10,7 @@
 \usepackage{amsmath,amsthm,amsfonts,amssymb}
 \usepackage{wrapfig}
 
+\begin{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 <<global_settings, echo=FALSE, warning=FALSE, include = FALSE>>=
 library(knitr)
@@ -30,14 +32,14 @@ opts_knit$set(root.dir = getwd())
     
   
 \SweaveOpts{concordance=TRUE}
-\begin{document}  
+  
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % strona tytulowa
 \title{Statistical packages - report 1}
 \author{Urszula Grochocińska, Marcin Mazurkiewicz}
 \maketitle
 \tableofcontents 
-  
+
   
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
@@ -58,16 +60,28 @@ Depth is the height of a diamond, measured from the culet to the table, divided 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Aim of analysis}
   
-  Jewelry is a kind of art made of expensive raw material. These art is based on precision and integrity but because of the fact that it is an art sometimes the defects increase the price. These defects make diamond unique and uniqueness is the main part of art. In our analyze we would like to check which features influence the price and at which level. Besides we are interested how important are all features that are influenced by jeweler(shape, cut) and that what are natural (color, clarity)
+  Jewelry is a kind of art made of expensive raw material. These art is based on precision and integrity but because of the fact that it is an art sometimes the defects increase the price. These defects make diamond unique and uniqueness is the main part of art. In our analyze we would like to check which features influence the price and at which level. Besides we are interested how important are all features that are influenced by jeweler(shape, cut) and that what are natural (color, clarity).
+The figure \ref{dist_price} is a visualisation of distribution of prices. The chart shows that the most common are relativly cheap diamonds. Then if the price increase the diamond becomes rare.
+
+<<reading_data, echo=FALSE>>=
+diamonds_data = read.csv("diamonds.csv", header = TRUE)
+@
+
+\begin{figure}
+\center
+<<data_visualisation_price, fig=TRUE, fig.width=11cm , echo=False>>=
+ggplot(data=diamonds_data) + geom_histogram(binwidth=200, aes(x=diamonds_data$price))  + xlab("price") + ylab("Frequency") + theme_minimal()
+
+@
+\label{dist_price}
+\caption{Distributionof values of price in our dataset}
+\end{figure}
   
   
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data preprocessing}
   This, first step of working with data we started from removing unnecessary variables. We remove the index column, because it is irrelevant information. Then we looked for missing data. Dataset didn't contain any NaNs, but some values were impossible to occur in reality. To handle such situations we changed every zero from x, y or z column to NA, because this will make our upcoming work easier. We also checked if other numerical columns contain zeros, but they didn't. Next,we focused on ensuring that categorical variables don't contain typos. In order to do that we just looked at all values they take, but there wasn't need any cleaning. We didn't deal with outliers, because we will do it within next steps of analysis.
-  
-<<reading_data, echo=FALSE>>=
-diamonds_data = read.csv("diamonds.csv", header = TRUE)
-@
+
 
 <<data_preprocessing, echo=TRUE, eval=TRUE>>=
 diamonds_data <- diamonds_data[2:11] #data cleaning - removing unnecessary variables
@@ -84,6 +98,11 @@ summary(diamonds_data$color)
 summary(diamonds_data$clarity)
 @
 
+Before we started fitting the model whe have made quick look on the data. In figures \ref{dist_continous} and \ref{dist_categorical} we can see the histograms and boxplots. The plot of depth is symetric similar to the bell curve. The next one (x) is much more dispersed. The distributions of y, z and espessialy table shows that this data are have small differences in each group. 
+
+
+\begin{figure}
+\center
 <<data_visualisation_continous_variables, fig=TRUE, fig.width=11cm , echo=False>>=
 p1 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$depth))  + xlab("Depth") + ylab("Frequency") + theme_minimal()
 p2 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$x))  + xlab("x") + ylab("") + theme_minimal()
@@ -91,27 +110,34 @@ p3 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=dia
 p4 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$z))  + xlab("z") + ylab("") + ylab("Frequency") + theme_minimal()
 p5 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$carat))  + xlab("Carat") + ylab("") + theme_minimal()
 p6 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$table))  + xlab("Table") + ylab("") + theme_minimal()
-grid.arrange(p1, p2, p3, p4, p5, p6, nrow = 3)
+grid.arrange(p1, p2, p3, p4, p5, p6, nrow = 2)
 @
+\label{dist_continous}
+\caption{Distributions of each of continous variables}
 
-<<data_visualisation_categorical_variables, fig=TRUE , fig.width=6, echo=False>>=
+\end{figure}
+
+\begin{figure}
+\begin{center}
+<<data_visualisation_categorical_variables, fig.cap = paste('Boxplots of price depending on values of categorical variables'), fig=TRUE , fig.width=11, echo=False>>=
 p1 <- qplot(x = cut, y = price, data = diamonds,
       geom = 'boxplot') + coord_cartesian(ylim = c(0, 8000))
 p2 <- qplot(x = color, y = price, data = diamonds,
       geom = 'boxplot') + coord_cartesian(ylim = c(0, 8000))
 p3 <- qplot(x = clarity, y = price, data = diamonds,
       geom = 'boxplot') + coord_cartesian(ylim = c(0, 8000))
-grid.arrange(p3, p2, p1, nrow = 3)
+p4 <- ggcorr(diamonds_data_omited)
+grid.arrange(p3, p2, p1, p4, nrow = 2)
 @
+\label{dist_categorical}
+\caption{Boxplots of price depending on values of categorical variables and the corelation chart between each two variables}
 
-<<correlation_plot, fig=TRUE , fig.width=6, echo=False>>=
-  ggcorr(diamonds_data_omited)
-@
+\end{figure}
 
-  
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \section{Model fitting}
     \subsection{Continuous variables}
+    
     To fit model to data we use function glmulti from package glmulti. To reduce complexity of model at this step we decided to choose maximum number of used variables to 3. We checked models with different distribution families. These were Gaussian, Poisson and Gamma. It turned out that Gamma model provides the best fit under the BIC criteria. The formula of this model is as follows:
     \begin{equation}
       \text{cost} = -1.0777 \text{carat} + 0.5714 z  + 0.9717 x +  1.0882.
@@ -198,7 +224,7 @@ points(diamonds_data_omited$price, col = 'red')
 \section{Check model assumptions}
     We checked if fitted models fulfill appropriate assumptions. It turns out that none of them do, but we will assume that they do. On the plots below we can see that non of them has normally distributed residuals. Chart 'Residuals vs Fitted' present the distribution of residuals which should be placed around 0. In each of our model the assumption about homogenity is not meet.The normal Q-Q shows if your residuals are normally distributed. Residuals should go around the diagonal line but in ur cases they are not. Cook's distance for residuals helps to detect outliers. They are visible in our cases and we try to handle them in next step of our analysis. Scale location - to describe!!!!!
 [Tu bym chciała, żeby pojawiły się tylko wykresy o kótrych wspominamy w tekście]    
-<<model assumptions, fig=TRUE, echo=FALSE, eval=TRUE>>=
+<<model_assumptions, fig=TRUE, echo=FALSE, eval=TRUE>>=
 layout(matrix(1:4, byrow = T, ncol = 2))
 plot(model_simple, which = 1:4)
     
