@@ -1,4 +1,3 @@
-
 \documentclass{article}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -10,7 +9,6 @@
 \usepackage{amsmath,amsthm,amsfonts,amssymb}
 \usepackage{wrapfig}
 
-\begin{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 <<global_settings, echo=FALSE, warning=FALSE, include = FALSE>>=
 library(knitr)
@@ -31,7 +29,7 @@ opts_knit$set(root.dir = getwd())
     
   
 \SweaveOpts{concordance=TRUE}
-  
+\begin{document}  
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % strona tytulowa
 \title{Statistical packages - report 1}
@@ -92,17 +90,17 @@ p3 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=dia
 p4 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$z))  + xlab("z") + ylab("") + ylab("Frequency") + theme_minimal()
 p5 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$carat))  + xlab("Carat") + ylab("") + theme_minimal()
 p6 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=diamonds_data_omited$table))  + xlab("Table") + ylab("") + theme_minimal()
-grid.arrange(p1, p2, p3, p4, p5, p6, nrow = 2)
+grid.arrange(p1, p2, p3, p4, p5, p6, nrow = 3)
 @
 
-<<data_visualisation_categorical_variables, fig=TRUE , fig.width=11, echo=False>>=
+<<data_visualisation_categorical_variables, fig=TRUE , fig.width=6, echo=False>>=
 p1 <- qplot(x = cut, y = price, data = diamonds,
       geom = 'boxplot') + coord_cartesian(ylim = c(0, 8000))
 p2 <- qplot(x = color, y = price, data = diamonds,
       geom = 'boxplot') + coord_cartesian(ylim = c(0, 8000))
 p3 <- qplot(x = clarity, y = price, data = diamonds,
       geom = 'boxplot') + coord_cartesian(ylim = c(0, 8000))
-grid.arrange(p3, p2, p1, nrow = 2)
+grid.arrange(p3, p2, p1, nrow = 3)
 @
 
   
