@@ -126,7 +126,7 @@ p2 <- qplot(x = color, y = price, data = diamonds,
       geom = 'boxplot') + coord_cartesian(ylim = c(0, 8000))
 p3 <- qplot(x = clarity, y = price, data = diamonds,
       geom = 'boxplot') + coord_cartesian(ylim = c(0, 8000))
-p4 <- ggcorr(diamonds_data_omited)
+p4 <- ggcorr(diamonds_data_omited[,c('carat', 'depth', 'table', 'price', 'x', 'y', 'z')])
 grid.arrange(p3, p2, p1, p4, nrow = 2)
 @
 \label{dist_categorical}
@@ -202,12 +202,7 @@ legend(35000, 23000, legend=c("Fitted values", "Real values"), col=c("black", "r
   
 \subsection{Model with additional interactions}
   To find model with additional interactions we use very similar approach as in previous cases. Maximum number of variables is 4 and the family is Gaussian. The best model we find consists of two continous variables: x, carat and two categorical: color and clarity. It has different coefficients. For the x with interaction with carat the coeficient is equal to 1527.5, for single carat it is on the level - 6912.8. The coeficetnts for categorical variables are shown in the table \ref{tab:colors_and_carat_coefficients} (for colors with carat interaction) and table \ref{tab:clarity_and_carat_coefficients} (for clarity with carat interaction). Similar as in the first case we plot \ref{complex_model_fit} the choosen points of real prices and the calculated points from model. As in previous cases the difference beetween model is not visible on the plot.
-  
-    \begin{equation}
-      \text{cost} =  - 6912.8\ \text{carat} + 1527.5\ \text{carat} \cdot x + C_i + D_i - 783.9,
-    \end{equation}
-  
-  
+
   \begin{table}[]
   \centering
 \begin{tabular}{l|llllll}
