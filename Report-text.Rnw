@@ -61,7 +61,7 @@ Depth is the height of a diamond, measured from the culet to the table, divided 
 \section{Aim of analysis}
   
   Jewelry is a kind of art made of expensive raw material. These art is based on precision and integrity but because of the fact that it is an art sometimes the defects increase the price. These defects make diamond unique and uniqueness is the main part of art. In our analyze we would like to check which features influence the price and at which level. Besides we are interested how important are all features that are influenced by jeweler(shape, cut) and that what are natural (color, clarity).
-The figure \ref{dist_price} is a visualisation of distribution of prices. The chart shows that the most common are relativly cheap diamonds. Then if the price increase the diamond becomes rare.
+The figure \ref{dist_price} is a visualization of distribution of prices. The chart shows that the most common are relatively cheap diamonds. Then if the price increase the diamond becomes rare.
 
 <<reading_data, echo=FALSE>>=
 diamonds_data = read.csv("diamonds.csv", header = TRUE)
@@ -74,7 +74,7 @@ ggplot(data=diamonds_data) + geom_histogram(binwidth=200, aes(x=diamonds_data$pr
 
 @
 \label{dist_price}
-\caption{Distributionof values of price in our dataset}
+\caption{Distribution of values of price in our dataset}
 \end{figure}
   
   
@@ -98,7 +98,7 @@ summary(diamonds_data$color)
 summary(diamonds_data$clarity)
 @
 
-Before we started fitting the model whe have made quick look on the data. In figures  and  we can see te histograms and boxplots. The plot of depth is symetric similar to the bell curve. The next one (x) is much more dispersed. The distributions of y, z and espessialy table shows that this data are have small differences in each group. 
+Before we started fitting the model we have made quick look on the data. In figures [????????????] and  we can see  histograms and box plots. The plot of depth is symmetric similar to the bell curve. The next one (x) is much more dispersed. The distributions of y, z and especially table shows that this data are have small differences in each group. 
 
 
 \begin{figure}
@@ -113,7 +113,7 @@ p6 <- ggplot(data=diamonds_data_omited) + geom_histogram(binwidth=0.1, aes(x=dia
 grid.arrange(p1, p2, p3, p4, p5, p6, nrow = 3)
 @
 \label{dist_continous}
-\caption{Distributions of each of continous variables}
+\caption{Distributions of each of continuous variables}
 \end{center}
 \end{figure}
 
@@ -130,7 +130,7 @@ p4 <- ggcorr(diamonds_data_omited)
 grid.arrange(p3, p2, p1, p4, nrow = 2)
 @
 \label{dist_categorical}
-\caption{Boxplots of price depending on values of categorical variables and the corelation chart between each two variables}
+\caption{Boxplots of price depending on values of categorical variables and the correlation chart between each two variables}
 \end{center}
 \end{figure}
 
@@ -225,13 +225,13 @@ points(diamonds_data_omited$price[seq(1, to=54000, by = 50)], col = 'red')
   
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Other models}
-    To find those three models from previous section we used glmulti function from glmulti package. Thus we take into consideration all models with specific restrictions. We set maximum model size to 3 in case with only continious variables and to 4 in the rest of cases. 
+    To find those three models from previous section we used glmulti function from glmulti package. Thus we take into consideration all models with specific restrictions. We set maximum model size to 3 in case with only continuous variables and to 4 in the rest of cases. 
     
     We used glmulti function to find all of considered models. But it turned out, that in second and third case the best model doesn't include z variable. That arouse our curiosity if model excluding this variable is significantly better than with it. Under BIC criteria best model with categorical variables with additional z is only 0.02 \% better than without it. Although it gives better BIC it contains more variables so it may be considered as worse model. 
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Check model assumptions}
-    We checked if fitted models fulfill appropriate assumptions. It turns out that none of them do, but we will assume that they do. On the plots below we can see that non of them has normally distributed residuals. Chart 'Residuals vs Fitted' present the distribution of residuals which should be placed around 0. In each of our model the assumption about homogenity is not meet.The normal Q-Q shows if your residuals are normally distributed. Residuals should go around the diagonal line but in ur cases they are not. Cook's distance for residuals helps to detect outliers. They are visible in our cases and we try to handle them in next step of our analysis. Scale location - to describe!!!!!  
+    We checked if fitted models fulfill appropriate assumptions. It turns out that none of them do, but we will assume that they do. On the plots below we can see that non of them has normally distributed residuals. Chart 'Residuals vs Fitted' present the distribution of residuals which should be placed around 0. In each of our model the assumption about homogeneity is not meet.The normal Q-Q shows if your residuals are normally distributed. Residuals should go around the diagonal line but in our cases they are not. Cook's distance for residuals helps to detect outliers. They are visible in our cases and we try to handle them in next step of our analysis. Scale location - to describe!!!!!  
 
 <<model_assumptions_simple, fig=TRUE, echo=FALSE, eval=TRUE, fig.cap='Charts used to check the assumptions of a model containing only continuous variables.'>>=
 layout(matrix(1:4, byrow = T, ncol = 2))
@@ -251,7 +251,7 @@ plot(model_complex, which = 1:4)
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Outliers handling}
-    To find Outliers of our fits we use outlierTest function. It provides us a list of most significant outliers. We decided to delete outliers that are too far from rest of the data. This decision was made because of the fact that this observations are much different then others in only choosen characterisics and it could be the mistake. After that we can try to fit the models again (three lines below but using dataset with deleted outliers - different for each glm or fit by glmulti again, but maybe not necessarily).
+    To find Outliers of our fits we use outlierTest function. It provides us a list of most significant outliers. We decided to delete outliers that are too far from rest of the data. This decision was made because of the fact that this observations are much different then others in only chosen characteristics and it could be the mistake. After that we can try to fit the models again (three lines below but using dataset with deleted outliers - different for each glm or fit by glmulti again, but maybe not necessarily).
 <<outliers, echo=FALSE, eval=TRUE>>=
 model_simple <- glm(formula = price~z+x+carat, data = diamonds_data_omited, family = Gamma(link = 'log'))
 model_middle <- glm(formula = price~color+clarity+x+carat, data = diamonds_data_omited, family = gaussian())
@@ -287,10 +287,10 @@ plot(model_simple_out, which = 1:4)
 \centering
 \begin{tabular}{l|c|c|c}
                                                      & number of variables & AIC    & \begin{tabular}[c]{@{}c@{}}difference between the model \\ and the best model\end{tabular} \\ \hline
-\begin{tabular}[c]{@{}l@{}}Model with only continous\\variables without outliers\end{tabular} 
+\begin{tabular}[c]{@{}l@{}}Model with only continuous\\variables without outliers\end{tabular} 
  & 3                   & 848300 & 0.0\%                                                                                      \\
-\begin{tabular}[c]{@{}l@{}}Model with only continous\\variables with outliers\end{tabular}      & 3                   & 848800 & -0.06\%                                                                                    \\
-\begin{tabular}[c]{@{}l@{}}Model with only continous\\and categorical variables\end{tabular}     & 4                   & 912700 & -7.6\%                                                                                     \\
+\begin{tabular}[c]{@{}l@{}}Model with only continuous\\variables with outliers\end{tabular}      & 3                   & 848800 & -0.06\%                                                                                    \\
+\begin{tabular}[c]{@{}l@{}}Model with only continuous\\and categorical variables\end{tabular}     & 4                   & 912700 & -7.6\%                                                                                     \\
 Model with interactions                              & 4                   & 884100 & -4.2\%                                                                                    
 \end{tabular}
 \caption{Comparison of 4 models from analysis}
