@@ -44,3 +44,34 @@ plot(seq(-2,2,.1), powers_student)
 plot(seq(-2,2,.1), powers_welch)
 plot(seq(-2,2,.1), powers_wilcoxon)
 
+##TASK 3
+powers_student <- vector(mode="numeric", length=0)
+powers_welch <- vector(mode="numeric", length=0)
+powers_wilcoxon <- vector(mode="numeric", length=0)
+
+for (i in seq(0,4,.1)){
+  tps = replicate(1000,
+                  t.test(rexp(200,rate = 1/2),
+                         rexp(200,rate = 1/i), var.equal = TRUE)$p.value)
+  powers_student = c(powers_student, sum(tps < alpha/2 | tps > 1 - alpha/2) / 1000)
+}
+
+for (i in seq(0,4,.1)){
+  tps = replicate(1000,
+                  t.test(rexp(200,rate = 1/2),
+                         rexp(200,rate = 1/i), var.equal = FALSE)$p.value)
+  powers_welch = c(powers_welch, sum(tps < alpha/2 | tps > 1 - alpha/2) / 1000)
+}
+
+for (i in seq(0,4,.1)){
+  tps = replicate(1000,
+                  wilcox.test(rexp(200,rate = 1/2),
+                              rexp(200,rate = 1/i))$p.value)
+  powers_wilcoxon = c(powers_wilcoxon, sum(tps < alpha/2 | tps > 1 - alpha/2) / 1000)
+}
+
+plot(seq(0,4,.1), powers_student)
+plot(seq(0,4,.1), powers_welch)
+plot(seq(0,4,.1), powers_wilcoxon)
+
+#power.t.test
