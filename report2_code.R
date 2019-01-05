@@ -30,6 +30,17 @@ plot(seq(-2,2,.1), powers_student)
 plot(seq(-2,2,.1), powers_welch)
 plot(seq(-2,2,.1), powers_wilcoxon)
 
+##TASK 2
+powers_student <- vector(mode="numeric", length=0)
+powers_welch <- vector(mode="numeric", length=0)
+powers_wilcoxon <- vector(mode="numeric", length=0)
+for (i in seq(-2,2,.1)){
+  powers_student = c(powers_student, t.power1(means = c(0, i), sds = c(2,4)))
+  powers_welch = c(powers_welch, t.power1(means = c(0, i), sds = c(2,4), var.equal = FALSE))
+  powers_wilcoxon = c(powers_wilcoxon, wilcoxon.power(means = c(0, i), sds = c(2,4)))
+}
 
-
+plot(seq(-2,2,.1), powers_student)
+plot(seq(-2,2,.1), powers_welch)
+plot(seq(-2,2,.1), powers_wilcoxon)
 
