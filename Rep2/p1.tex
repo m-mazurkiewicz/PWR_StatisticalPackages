@@ -13,22 +13,6 @@
 \usepackage{Sweave}
 \begin{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  <<global_settings, echo=FALSE, warning=FALSE, include = FALSE>>=
-library(knitr)
-library(car)
-library(ggplot2)
-library(gridExtra)
-library(GGally)
-packages<-function(x){
-  x<-as.character(match.call()[[2]])
-  if (!require(x,character.only=TRUE)){
-    install.packages(pkgs=x,repos="http://cran.r-project.org")
-    require(x,character.only=TRUE)
-  }
-}
-
-opts_chunk$set(fig.path='figure/', fig.align='center', fig.pos='H',fig.width=5, fig.height=4)
-opts_knit$set(root.dir = getwd())
   
   
 \input{p1-concordance}
@@ -97,3 +81,80 @@ After it we use this function and plot power functions for all three test.
 +     powers_welch = c(powers_welch, t.power1(means = c(0, i), sds = c(2,2), var.equal = FALSE))
 +     powers_wilcoxon = c(powers_wilcoxon, wilcoxon.power(means = c(0, i), sds = c(2,2)))
 +   }
+\end{Sinput}
+\end{Schunk}
+\begin{figure}
+\center
+\includegraphics{p1-task_1_plot}
+\label{chart_t1}
+\caption{Power functions of three tests. Tests for two samples with normal distribution and equal variances.}
+\end{figure}
+The first plot \ref{chart_t1} we can see that the power function looks almost the same for all tests when we consider the samples with normal distribution and equal variance. It is also shown that those test are much more efficient when the difference between means $\mu_1-\mu_2$ is nor close to 0. The power function is symetric and the values decrease significantly faster in $[-1, 1]$ interval of $\mu_1-\mu_2$. Concerning choosen significance level $\alpha=0.05$ there is no e uniformly strongest test.
+
+  \section{Task 2.}
+ The second task is similar to first but instead of equal variances we have to samples, one with $\sigma=2$ and the second sample with $\sigma=4$.
+\begin{Schunk}
+\begin{Sinput}
+>   powers_student <- vector(mode="numeric", length=0)
+>   powers_welch <- vector(mode="numeric", length=0)
+>   powers_wilcoxon <- vector(mode="numeric", length=0)
+>   for (i in seq(-2,2,.1)){
++     powers_student = c(powers_student, t.power1(means = c(0, i), sds = c(2,4)))
++     powers_welch = c(powers_welch, t.power1(means = c(0, i), sds = c(2,4), var.equal = FALSE))
++     powers_wilcoxon = c(powers_wilcoxon, wilcoxon.power(means = c(0, i), sds = c(2,4)))
++   }
+> 
+\end{Sinput}
+\end{Schunk}
+\begin{figure}
+\center
+\includegraphics{p1-task_2_plot}
+\label{chart_t2}
+\caption{Power functions of three tests. Tests for two samples with normal distribution and non equal variances.}
+\end{figure}
+In the second case the Student t-test does not meet the assumption about variance equality. In this case we would like to drop this assumption to see the result. Also in this case the differences between test are very small. Comparing the plots \ref{chart_t1} and \ref{chart_t2} we could see that the slope of the curves are different. In first figure the values decreas faster than in second chart. Besides the values of power function on the figure \ref{chart_t2} begin to decrease when the diference $|\mu_1-\mu_2|$ is grater than 1.
+
+  \section{Task 3.}
+ The last task concerns the case in which the distribution of samples are exponential. 
+\begin{Schunk}
+\begin{Sinput}
+>   powers_student <- vector(mode="numeric", length=0)
+>   powers_welch <- vector(mode="numeric", length=0)
+>   powers_wilcoxon <- vector(mode="numeric", length=0)
+>   for (i in seq(0,4,.1)){
++     tps = replicate(1000,
++                     t.test(rexp(200,rate = 1/2),
++                            rexp(200,rate = 1/i), var.equal = TRUE)$p.value)
++     powers_student = c(powers_student, sum(tps < alpha/2 | tps > 1 - alpha/2) / 1000)
++   }
+>   for (i in seq(0,4,.1)){
++     tps = replicate(1000,
++                     t.test(rexp(200,rate = 1/2),
++                            rexp(200,rate = 1/i), var.equal = FALSE)$p.value)
++     powers_welch = c(powers_welch, sum(tps < alpha/2 | tps > 1 - alpha/2) / 1000)
++   }
+>   for (i in seq(0,4,.1)){
++     tps = replicate(1000,
++                     wilcox.test(rexp(200,rate = 1/2),
++                                 rexp(200,rate = 1/i))$p.value)
++     powers_wilcoxon = c(powers_wilcoxon, sum(tps < alpha/2 | tps > 1 - alpha/2) / 1000)
++   }
+> 
+\end{Sinput}
+\end{Schunk}
+
+\begin{figure}
+\center
+\includegraphics{p1-task_3_plot}
+\label{chart_t3}
+\caption{Power functions of three tests. Tests for two samples with exponential distribution}
+\end{figure}
+
+In last task we consider the non normal distributions of samples. Thus the assumption for Student t-test and Welsh test about normality is not meet but we would like to drop this assumption to see the power function.  On the figure \ref{chart_t3} we can see that the power of all three test is similar but the Wilcoxon test has lower values on interval $[0,1]$. Comparing to two other tasks the slope of the curve in lat one is much more similar to the first one. The last thing that could be see on the \ref{chart_t3} is the small non symetry -- the right side of the curve increase slower than the left one. 
+
+\section{Conclusions}
+In our work we considered three tests in which two of them are extension of Student t-test. This exension is based on the assumptions that must be meet in Student t-test. The plots of power function does not show huge differences between them. It might be caused by the fact that our sample is relativly large. However the results show that even if we did not have the data in the form that we would like to have (for example with normal distribution) we could substitute the most known test by other and get the test with similar power.
+
+
+
+\end{document}
