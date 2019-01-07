@@ -44,7 +44,7 @@ opts_knit$set(root.dir = getwd())
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \section{Introduction}
-This report concerns checking the hypothesis using theree tests: Student t-test, Welch t-test and Wilcoxon test. In our case the hypothesis hypothesis is two-sided (we are testing if the mean is equal).
+This report concerns checking the hypothesis using theree tests: Student t-test, Welch t-test and Wilcoxon test. In our case the hypothesis is two-sided (we are testing if the mean is equal).
   \subsection{Student t-test}
 In our case the test is used for testing hypothesis about mean with equal variances in the samples and with normal distribution. The test is based on $t$ distribution and the significance level. The $t$ distribution is specified by number of freedom degrees. With increasing number of freedom degrees this distribution converge to normal distribution.
 
@@ -60,7 +60,7 @@ where $\overline{x}_1$ and $\overline{x}_2$ are means, $n_1$ and $n_2$ are sampl
 Because of the fact that we have two-sided test we reject the null hypothesis in favor of the alternative if the $t$ statistics is not in the interval $[t_{\alpha/2}, t_{1-\alpha/2}]$. The interval is based on $t$ distribution with $n_1+n_2-2$ number of freedom degrees.
 
   \subsection{Welch t-test}
-This test is an extension of Student t-test. Because of the fact that Student t-test has assumption about equal variances and normality there appear a need to construct a test to examinate a case with unequal variances. Such test is for example Welch t-test. There is used a statistic $t$ wchih is given by following formula:
+This test is an extension of Student t-test. Because of the fact that Student t-test has assumption about equal variances and normality there appear a need to construct a test to examinate a case with unequal variances. Such test is for example Welch t-test. There is used a statistic $t$ which is given by following formula:
   \begin{equation}
      d=\dfrac{\bar{x}_1-\bar{x}_2}{\sqrt{\frac{s_1^2}{n_1}+\frac{s_2^2}{n_2}}},
   \end{equation}
@@ -85,7 +85,7 @@ The last test taken into consideration is Wilcoxon test. It can be used as a sub
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \section{Task 1.}
 In the first task we consider two samples of 200 observations in each which have normal distribution with variance $\sigma=2$.
-  Firstly we make the function for calculation power function fo Student t-test and wilcoxon test.
+  Firstly we make the function for calculation power function for Student t-test and Wilcoxon test.
  
 <<functions, echo=FALSE>>=
   alpha = .05
@@ -127,10 +127,10 @@ After it we use this function and plot power functions for all three test.
 \label{chart_t1}
 \caption{Power functions of three tests. Tests for two samples with normal distribution and equal variances.}
 \end{figure}
-The first plot \ref{chart_t1} we can see that the power function looks almost the same for all tests when we consider the samples with normal distribution and equal variance. It is also shown that those test are much more efficient when the difference between means $\mu_1-\mu_2$ is nor close to 0. The power function is symetric and the values decrease significantly faster in $[-1, 1]$ interval of $\mu_1-\mu_2$. Concerning choosen significance level $\alpha=0.05$ there is no e uniformly strongest test.
+On the first plot \ref{chart_t1} we can see that the power function looks almost the same for all tests when we consider the samples with normal distribution and equal variance. It is also shown that those test are much more efficient when the difference between means $\mu_1-\mu_2$ is nor close to 0. The power function is symetric and the values decrease significantly faster in $[-1, 1]$ interval of $\mu_1-\mu_2$. Concerning choosen significance level $\alpha=0.05$ there is no uniformly strongest test.
 
   \section{Task 2.}
- The second task is similar to first but instead of equal variances we have to samples, one with $\sigma=2$ and the second sample with $\sigma=4$.
+ The second task is similar to first but instead of equal variances we have two samples, one with $\sigma=2$ and the second sample with $\sigma=4$.
 <<task_2, echo=True>>=
   powers_student <- vector(mode="numeric", length=0)
   powers_welch <- vector(mode="numeric", length=0)
@@ -197,10 +197,10 @@ In the second case the Student t-test does not meet the assumption about varianc
 \caption{Power functions of three tests. Tests for two samples with exponential distribution}
 \end{figure}
 
-In last task we consider the non normal distributions of samples. Thus the assumption for Student t-test and Welsh test about normality is not meet but we would like to drop this assumption to see the power function.  On the figure \ref{chart_t3} we can see that the power of all three test is similar but the Wilcoxon test has lower values on interval $[0,1]$. Comparing to two other tasks the slope of the curve in lat one is much more similar to the first one. The last thing that could be see on the \ref{chart_t3} is the small non symetry -- the right side of the curve increase slower than the left one. 
+In last task we consider the non-normal distributions of samples. Thus the assumption for Student t-test and Welsh test about normality is not meet but we would like to drop this assumption to see the power function.  On the figure \ref{chart_t3} we can see that the power of all three test is similar but the Wilcoxon test has lower values on interval $[0,1]$. Comparing to two other tasks the slope of the curve in lat one is much more similar to the first one. The last thing that could be see on the \ref{chart_t3} is the small non-symetry -- the right side of the curve increase slower than the left one. 
 
 \section{Conclusions}
-In our work we considered three tests in which two of them are extension of Student t-test. This exension is based on the assumptions that must be meet in Student t-test. The plots of power function does not show huge differences between them. It might be caused by the fact that our sample is relativly large. However the results show that even if we did not have the data in the form that we would like to have (for example with normal distribution) we could substitute the most known test by other and get the test with similar power.
+In our work we considered three tests in which two of them are extension of Student t-test. This exension is based on the assumptions that must be meet in Student t-test. The plots of power function does not show huge differences between them. It might be caused by the fact that our sample is relativly large. There is no  uniformly strongest test at the specified significance level among them. However the results show that even if we did not have the data in the form that we would like to have (for example with normal distribution) we could substitute the most known test by other and get the test with similar power.
 
 
 
