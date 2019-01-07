@@ -44,11 +44,11 @@ opts_knit$set(root.dir = getwd())
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \section{Introduction}
-This report concerns checking the hypothesis using theree tests: Student t-test, Welch t-test and Wilcoxon test. In our case the hypothesis is two-sided (we are testing if the mean is equal).
+This report concerns checking the hypothesis using three tests: Student t-test, Welch t-test, and Wilcoxon test. In our case the hypothesis is two-sided (we are testing if means of two samples are equal).
   \subsection{Student t-test}
-In our case the test is used for testing hypothesis about mean with equal variances in the samples and with normal distribution. The test is based on $t$ distribution and the significance level. The $t$ distribution is specified by number of freedom degrees. With increasing number of freedom degrees this distribution converge to normal distribution.
+In our case, the test is used for testing hypothesis about mean with equal variances in the samples and with the normal distribution. The test is based on $t$ distribution and the significance level. The $t$ distribution is specified by a number of freedom degrees. With an increasing number of freedom degrees, this distribution converges to the normal distribution.
 
-  The t-test has asumption: independent observations, normal distribution of samples and equal variances for samples. The last one could be drop if the sample size is large enough.
+  The t-test has assumption: independent observations, normal distribution of samples and equal variances for samples. The last one could be dropped if the sample size is large enough.
   In the test we calculate the statistics $t$:
   \begin{equation}
   t=\frac{\overline{x}_1-\overline{x}_2}{\sqrt{s^2\left(\frac{1}{n_1}+\frac{1}{n_2}\right)}},
@@ -60,7 +60,7 @@ where $\overline{x}_1$ and $\overline{x}_2$ are means, $n_1$ and $n_2$ are sampl
 Because of the fact that we have two-sided test we reject the null hypothesis in favor of the alternative if the $t$ statistics is not in the interval $[t_{\alpha/2}, t_{1-\alpha/2}]$. The interval is based on $t$ distribution with $n_1+n_2-2$ number of freedom degrees.
 
   \subsection{Welch t-test}
-This test is an extension of Student t-test. Because of the fact that Student t-test has assumption about equal variances and normality there appear a need to construct a test to examinate a case with unequal variances. Such test is for example Welch t-test. There is used a statistic $t$ which is given by following formula:
+This test is an extension of Student t-test. Because of the fact that Student t-test has an assumption about equal variances and normality there appear a need to construct a test to examin a case with unequal variances. Such test is, for example, Welch t-test. There is used a statistic $t$ which is given by the following formula:
   \begin{equation}
      d=\dfrac{\bar{x}_1-\bar{x}_2}{\sqrt{\frac{s_1^2}{n_1}+\frac{s_2^2}{n_2}}},
   \end{equation}
@@ -69,22 +69,22 @@ where
      s_1^2=\dfrac{\sum\limits_{i=1}^{n_1}(x_i-\bar{x}_1)^2}{n_1-1},\, s_2^2=\dfrac{\sum\limits_{i=1}^{n_2}(x_j-\bar{x}_2)^2}{n_2-1}.
   \end{equation}
 
-The number of freedon degrees are given by:
+The number of freedom degrees are given by:
   \begin{equation}
      df=\dfrac{\left[\frac{s_1^2}{n_1}+\frac{s_2^2}{n_2}\right]^2}{\frac{(s_1^2/n_1)^2}{n_1-1}+\frac{(s_2^2/n_2)^2}{n_2-1}}.
   \end{equation}
   
-The rest part of procedure (rejecting or not the null hypothesis) are like Student t-test.
+The rest part of the procedure (rejecting or not the null hypothesis) is like Student t-test.
 
   \subsection{Wilcoxon test}
-The last test taken into consideration is Wilcoxon test. It can be used as a substitution of Student t-test when the distribution of samples is not normal. This test is non-parametric and is used to compare two related samples.
+The last test taken into consideration is the Wilcoxon test. It can be used as a substitution of Student t-test when the distribution of samples is not normal. This test is non-parametric and is used to compare two related samples.
 
-  The algorithm consist of few steps. Firstly we calculate the differences between pairs of observations $|x_i-y_i|$. Separately we calculate sign of this differences. Then we rank those differences and denote then $R_i$. Statistic $W^+$ is defined as sum of ranks $R_i$ in which the difference $d_i<0$. After all the statistics is compared with reference table. This comparison results in rejecting or not the hypothesis.
+  The algorithm consists of a few steps. Firstly we calculate the differences between pairs of observations $|x_i-y_i|$. Separately we calculate sign of these differences. Then we rank those differences and denote then $R_i$. Statistic $W^+$ is defined as sum of ranks $R_i$ in which the difference $d_i<0$. After all the statistics are compared with the reference table. This comparison results in rejecting or not the hypothesis.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \section{Task 1.}
-In the first task we consider two samples of 200 observations in each which have normal distribution with variance $\sigma=2$.
+In the first task we consider two samples of 200 observations in each which have normal distribution with standard deviation $\sigma=2$.
   Firstly we make the function for calculation power function for Student t-test and Wilcoxon test.
  
 <<functions, echo=FALSE>>=
@@ -105,7 +105,7 @@ In the first task we consider two samples of 200 observations in each which have
     sum(tps < alpha/2 | tps > 1 - alpha/2) / nsim
   }
 @
-After it we use this function and plot power functions for all three test.
+After that, we use this function and plot power functions for all three test.
 <<task_1, echo=True>>=
   powers_student <- vector(mode="numeric", length=0)
   powers_welch <- vector(mode="numeric", length=0)
@@ -127,10 +127,10 @@ After it we use this function and plot power functions for all three test.
 \label{chart_t1}
 \caption{Power functions of three tests. Tests for two samples with normal distribution and equal variances.}
 \end{figure}
-On the first plot \ref{chart_t1} we can see that the power function looks almost the same for all tests when we consider the samples with normal distribution and equal variance. It is also shown that those test are much more efficient when the difference between means $\mu_1-\mu_2$ is nor close to 0. The power function is symetric and the values decrease significantly faster in $[-1, 1]$ interval of $\mu_1-\mu_2$. Concerning choosen significance level $\alpha=0.05$ there is no uniformly strongest test.
+On the first plot \ref{chart_t1} we can see that the power function looks almost the same for all tests when we consider the samples with normal distribution and equal variance. It is also shown that those tests are much more efficient when the difference between means $\mu_1-\mu_2$ is not close to 0. The power function is symmetric and the values decrease significantly faster in $[-1, 1]$ interval of $\mu_1-\mu_2$. Concerning chosen significance level $\alpha=0.05$, there is no uniformly strongest test.
 
   \section{Task 2.}
- The second task is similar to first but instead of equal variances we have two samples, one with $\sigma=2$ and the second sample with $\sigma=4$.
+ The second task is similar to first but instead of equal variances, we have two samples, one with $\sigma=2$ and the second sample with $\sigma=4$.
 <<task_2, echo=True>>=
   powers_student <- vector(mode="numeric", length=0)
   powers_welch <- vector(mode="numeric", length=0)
@@ -153,7 +153,7 @@ On the first plot \ref{chart_t1} we can see that the power function looks almost
 \label{chart_t2}
 \caption{Power functions of three tests. Tests for two samples with normal distribution and non equal variances.}
 \end{figure}
-In the second case the Student t-test does not meet the assumption about variance equality. In this case we would like to drop this assumption to see the result. Also in this case the differences between test are very small. Comparing the plots \ref{chart_t1} and \ref{chart_t2} we could see that the slope of the curves are different. In first figure the values decreas faster than in second chart. Besides the values of power function on the figure \ref{chart_t2} begin to decrease when the diference $|\mu_1-\mu_2|$ is grater than 1.
+In the second case, the Student t-test does not meet the assumption about variance equality. In this case, we would like to drop this assumption to see the result. Also, in this case, the differences between test are very small. Comparing the plots \ref{chart_t1} and \ref{chart_t2} we could see that the slope of the curves are different. In first figure, the values decrease faster than in the second chart. Besides the values of power function on the figure \ref{chart_t2} begin to decrease when the difference $|\mu_1-\mu_2|$ is greater than 1.
 
   \section{Task 3.}
  The last task concerns the case in which the distribution of samples are exponential. 
@@ -197,10 +197,10 @@ In the second case the Student t-test does not meet the assumption about varianc
 \caption{Power functions of three tests. Tests for two samples with exponential distribution}
 \end{figure}
 
-In last task we consider the non-normal distributions of samples. Thus the assumption for Student t-test and Welsh test about normality is not meet but we would like to drop this assumption to see the power function.  On the figure \ref{chart_t3} we can see that the power of all three test is similar but the Wilcoxon test has lower values on interval $[0,1]$. Comparing to two other tasks the slope of the curve in lat one is much more similar to the first one. The last thing that could be see on the \ref{chart_t3} is the small non-symetry -- the right side of the curve increase slower than the left one. 
+In the last task, we consider the non-normal distributions of samples. Thus the assumption for Student t-test and Welsh test about normality is not met but we would like to drop this assumption to see the power function. On the figure \ref{chart_t3} we can see that the power of all three tests is similar but the Wilcoxon test has lower values on the interval $[0,1]$. Comparing to the two other tasks the slope of the curve in lat[???????????last?] one is much more similar to the first one. The last thing that could be seen on the \ref{chart_t3} is the small non-symmetry -- the right side of the curve increase slower than the left one. 
 
 \section{Conclusions}
-In our work we considered three tests in which two of them are extension of Student t-test. This exension is based on the assumptions that must be meet in Student t-test. The plots of power function does not show huge differences between them. It might be caused by the fact that our sample is relativly large. There is no  uniformly strongest test at the specified significance level among them. However the results show that even if we did not have the data in the form that we would like to have (for example with normal distribution) we could substitute the most known test by other and get the test with similar power.
+In our work, we considered three tests in which two of them are extensions of Student t-test. This extension is based on the assumptions that must be meet in Student t-test. The plots of power function do not show huge differences between them. It might be caused by the fact that our sample is relatively large. There is no uniformly strongest test at the specified significance level among them. However, the results show that even if we did not have the data in the form that we would like to have (for example with normal distribution) we could substitute the most known test by other and get the test with similar power.
 
 
 
