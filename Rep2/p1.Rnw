@@ -119,10 +119,10 @@ After it we use this function and plot power functions for all three test.
 \begin{figure}
 \center
 <<task_1_plot, fig=TRUE, fig.width=4cm , echo=False>>=
-  plot(seq(-2,2,.1), powers_student, xlab=expression(mu_1-mu_2), ylab="power")
-  points(seq(-2,2,.1), powers_welch, col='red')
-  points(seq(-2,2,.1), powers_wilcoxon, col='blue')
-  legend("right", c('Student t-test', 'Welsh test', 'Wilcoxon test'))
+  plot(seq(-2,2,.1), powers_student, cex = .9 , pch = 16, xlab=latex2exp('$\\mu_1-\\mu_2$'), ylab="power")
+  points(seq(-2,2,.1), powers_welch, cex = .9, pch = 16, col='red')
+  points(seq(-2,2,.1), powers_wilcoxon, cex = .9, pch = 16, col='blue')
+  legend('right', c('Student t-test', 'Welsh test', 'Wilcoxon test'), pch = 16, col = c('black', 'red', 'blue'))
 @
 \label{chart_t1}
 \caption{Power functions of three tests. Tests for two samples with normal distribution and equal variances.}
@@ -145,10 +145,10 @@ On the first plot \ref{chart_t1} we can see that the power function looks almost
 \begin{figure}
 \center
 <<task_2_plot, fig=TRUE, fig.width=4cm , echo=False>>=
-  plot(seq(-2,2,.1), powers_student, xlab=expression(mu_1-mu_2), ylab="power")
-  points(seq(-2,2,.1), powers_welch, col='red')
-  points(seq(-2,2,.1), powers_wilcoxon, col='blue')
-  legend("right", c('Student t-test', 'Welsh test', 'Wilcoxon test'))
+  plot(seq(-2,2,.1), powers_student, cex = .9 , pch = 16, xlab=latex2exp('$\\mu_1-\\mu_2$'), ylab="power")
+  points(seq(-2,2,.1), powers_welch, cex = .9 , pch = 16, col='red')
+  points(seq(-2,2,.1), powers_wilcoxon, cex = .9 , pch = 16, col='blue')
+  legend("right", c('Student t-test', 'Welsh test', 'Wilcoxon test'), pch = 16, col = c('black', 'red', 'blue'))
 @
 \label{chart_t2}
 \caption{Power functions of three tests. Tests for two samples with normal distribution and non equal variances.}
@@ -188,10 +188,10 @@ In the second case the Student t-test does not meet the assumption about varianc
 \begin{figure}
 \center
 <<task_3_plot, fig=TRUE, fig.width=4cm , echo=False>>=
-  plot(seq(-2,2,.1), powers_student, xlab=expression(mu_1-mu_2), ylab="power")
-  points(seq(-2,2,.1), powers_welch, col='red')
-  points(seq(-2,2,.1), powers_wilcoxon, col='blue')
-  legend("right", c('Student t-test', 'Welsh test', 'Wilcoxon test'))
+  plot(seq(-2,2,.1), powers_student, cex = .9 , pch = 16, xlab=latex2exp('$\\mu_1-\\mu_2$'), ylab="power")
+  points(seq(-2,2,.1), powers_welch, cex = .9 , pch = 16, col='red')
+  points(seq(-2,2,.1), powers_wilcoxon, cex = .9 , pch = 16, col='blue')
+  legend("right", c('Student t-test', 'Welsh test', 'Wilcoxon test'), pch = 16, col = c('black', 'red', 'blue'))
 @
 \label{chart_t3}
 \caption{Power functions of three tests. Tests for two samples with exponential distribution}
