@@ -85,3 +85,11 @@ mean_naive = mean(naive_lightbulb_lifetime)
 variance_naive = var(naive_lightbulb_lifetime)
 
 
+# task 5 - this estimator assumes that between last inspection and moment of bulb replacement (next inspection) the probability of light failure comes from exponential or uniform distribution
+
+naive_lightbulb_lifetime = failureTimes[2:length(failureTimes)] - failureTimes[1:length(failureTimes) - 1]
+uniform_multiplier = runif(length(naive_lightbulb_lifetime))
+uniform_lightbulb_lifetime = uniform_multiplier * naive_lightbulb_lifetime
+mean_uniform = mean(uniform_lightbulb_lifetime)
+variance_uniform = var(uniform_lightbulb_lifetime)
+
