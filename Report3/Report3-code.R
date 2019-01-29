@@ -7,9 +7,11 @@
 v = .7
 lambda <- 0.5
 T_0 <- 100
-n <- qpois(1 - 1e-8, lambda = v * T_0) # nie wiem czemu jest 1 - 1e-8
-X <- rexp(n = n, rate = v)
-inspection_times <- c(0, cumsum(X))
+# n <- qpois(1 - 1e-8, lambda = v * T_0) # nie wiem czemu jest 1 - 1e-8
+# X <- rexp(n = n, rate = v)
+# inspection_times <- c(0, cumsum(X))
+# inspections <- c(0,sort(runif(n = rpois(1, lambda=time.horizon*nu), min = 0, max = time.horizon)))
+inspection_times <- c(0,sort(runif(n = rpois(1, lambda=T_0*v), min = 0, max = T_0)))
 
 lightbulb = 1
 failureTimes = c(0)
@@ -63,9 +65,7 @@ avgNoOfReplacements = avgNoOfReplacements / N
 v = .7
 lambda <- 0.5
 T_0 <- 100
-n <- qpois(1 - 1e-8, lambda = v * T_0) # nie wiem czemu jest 1 - 1e-8
-X <- rexp(n = n, rate = v)
-inspection_times <- c(0, cumsum(X))
+inspection_times <- c(0,sort(runif(n = rpois(1, lambda=T_0*v), min = 0, max = T_0)))
 
 lightbulb = 1
 failureTimes = c(0)
@@ -93,3 +93,9 @@ uniform_lightbulb_lifetime = uniform_multiplier * naive_lightbulb_lifetime
 mean_uniform = mean(uniform_lightbulb_lifetime)
 variance_uniform = var(uniform_lightbulb_lifetime)
 
+#for exponential case basically in the same way, but different multiplier is needed (what multipler??)
+# naive_lightbulb_lifetime = failureTimes[2:length(failureTimes)] - failureTimes[1:length(failureTimes) - 1]
+# exponential_multiplier = runif(length(naive_lightbulb_lifetime))
+# exponential_lightbulb_lifetime = uniform_multiplier * naive_lightbulb_lifetime
+# mean_exponential = mean(uniform_lightbulb_lifetime)
+# variance_exponential = var(uniform_lightbulb_lifetime)
