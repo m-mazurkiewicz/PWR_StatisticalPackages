@@ -43,6 +43,7 @@ v <- .7
 lambda <- 0.5
 T_0 <- 100
 avg_no_of_replacements <- 0
+avg_time_without_light <- 0
 for (j in 1:N){
     inspection_times <- c(0, sort(runif(n = rpois(1, lambda = T_0 * v), min = 0, max = T_0)))
 
@@ -58,10 +59,12 @@ for (j in 1:N){
             lightbulbTime <- rexp(1, rate = lambda)
         }
     }
+    avg_time_without_light <- avg_time_without_light + mean(new_bulb_moments[2:length(new_bulb_moments)] - momentsOfFailure)
     avg_no_of_replacements <- avg_no_of_replacements + lightbulb
 }
 
 avg_no_of_replacements <- avg_no_of_replacements / N
+avg_time_without_light <- avg_time_without_light / N
 
 
 # task 4 - just as I thought - assume that failure is at the moment of inspection
