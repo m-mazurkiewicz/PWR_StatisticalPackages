@@ -26,9 +26,12 @@ for (i in 1:(length(inspection_times) - 1)){
   }
 }
 
-plot(inspection_times)
-points(failureTimes, col = "red")
+df_inspection_times <- data.frame(number = 1:length(inspection_times), moments = inspection_times)
+ggplot(df_inspection_times, aes(x=moments, y=number)) + geom_point() + labs(x = "Moments of inspection", y = "Number of inspection") + coord_cartesian(xlim = c(3, T_0-3))
 
+momentsOfFailure <- lightbulbLifetimes + failureTimes[1:length(failureTimes) - 1]
+df_momentsOfFailure <- data.frame(number = 1:length(momentsOfFailure), moments = momentsOfFailure)
+ggplot(df_momentsOfFailure, aes(x=moments, y=number)) + geom_point() + labs(x = "Moments of failure", y = "Number of failure") + coord_cartesian(xlim = c(3, T_0-3))
 
 #TASK 3
 
