@@ -47,6 +47,9 @@ opts_knit$set(root.dir = getwd())
   In this report we will focus on analysing censored data. To do so, at first we will create a generator for lightbulbs that are inspected periodically. Then we will go to part of analyzing results obtained from implemented generator. We will work with data using naive and Turnbull estimator.
 
 
+\section{LintR}
+In our report we have also used \textit{LintR} package to check the correctness of written code. To do that we executed the following line of code in console: \textsc{lintr::lint("name_of_file.R")} [OR DIFFERENT WAY TO MARK THAT IT'S A COMMAND]. All mistakes had been corrected.
+
 %%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusions}
 
