@@ -1,0 +1,55 @@
+
+\documentclass{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[utf8]{inputenc}
+\usepackage[top=3cm, bottom=3cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[colorlinks=true, linkcolor=blue]{hyperref}
+\usepackage{amsmath,amsthm,amsfonts,amssymb}
+\usepackage{wrapfig}
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+<<global_settings, echo=FALSE, warning=FALSE, include = FALSE>>=
+library(knitr)
+library(car)
+library(ggplot2)
+library(gridExtra)
+library(GGally)
+library(latex2exp)
+packages<-function(x){
+  x<-as.character(match.call()[[2]])
+  if (!require(x,character.only=TRUE)){
+    install.packages(pkgs=x,repos="http://cran.r-project.org")
+    require(x,character.only=TRUE)
+  }
+}
+
+opts_chunk$set(fig.path='figure/', fig.align='center', fig.pos='H',fig.width=5, fig.height=4)
+opts_knit$set(root.dir = getwd())
+@
+  
+  
+  \SweaveOpts{concordance=TRUE}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  % strona tytulowa
+\title{Statistical packages - report 3}
+\author{Urszula Grochocińska, Marcin Mazurkiewicz}
+\maketitle
+\tableofcontents 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \section{Introduction}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusions}
+
+
+
+\end{document}
