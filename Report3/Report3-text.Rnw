@@ -44,7 +44,7 @@ opts_knit$set(root.dir = getwd())
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \section{Introduction}
-
+  In this report we will focus on analysing censored data. To do so, at first we will create a generator for lightbulbs that are inspected periodically. Then we will go to part of analyzing results obtained from implemented generator. We will work with data using naive and Turnbull estimator.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%
