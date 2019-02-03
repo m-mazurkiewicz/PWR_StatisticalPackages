@@ -76,10 +76,12 @@ list_of_vars <- c()
 list_of_biases <- c()
 list_of_mses <- c()
 
-for (T_0 in seq(50,250,10)){
-  v <- .7
+# for (T_0 in seq(50,250,10)){
+for (v in seq(0.1,2.5,0.1)){
+# for (lambda in seq(0.1,2.5,0.1)){
+  # v <- .7
   lambda <- 0.5
-  # T_0 <- 100
+  T_0 <- 100
   # for (j in 1:N){
   inspection_times <- c(0, sort(runif(n = rpois(1, lambda = T_0 * v), min = 0, max = T_0)))
   lightbulb <- 1
@@ -103,13 +105,19 @@ for (T_0 in seq(50,250,10)){
   list_of_mses <- append(list_of_mses, mean((rep(mean(naive_lightbulb_lifetime),length(naive_lightbulb_lifetime))-naive_lightbulb_lifetime)^2))
 }
 
-df_task4 <- data.frame(time = seq(50,250,10), means = list_of_means, vars = list_of_vars, biases = list_of_biases, mses = list_of_mses)
-ggplot(data = df_task4, aes(x = time, y = value)) + 
+# df_task4 <- data.frame(time = seq(50,250,10), means = list_of_means, vars = list_of_vars, biases = list_of_biases, mses = list_of_mses)
+df_task4 <- data.frame(failure_rate = seq(0.1,2.5,0.1), means = list_of_means, vars = list_of_vars, biases = list_of_biases, mses = list_of_mses)
+# df_task4 <- data.frame(inspection_rate = seq(0.1,2.5,0.1), means = list_of_means, vars = list_of_vars, biases = list_of_biases, mses = list_of_mses)
+# ggplot(data = df_task4, aes(x = time, y = value)) + 
+ggplot(data = df_task4, aes(x = failure_rate, y = value)) + 
+# ggplot(data = df_task4, aes(x = inspection_rate, y = value)) +   
   geom_point(aes(y = means, color = "Mean")) +
   geom_point(aes(y = vars, color = "Variance")) +
   geom_point(aes(y = biases, color = "Bias")) +
   geom_point(aes(y = mses, color = "MSE")) +
-  labs(colour="", x = "Time horizon", y = "Value") +
+  # labs(colour="", x = "Time horizon", y = "Value") +
+  labs(colour="", x = "Failure rate", y = "Value") +
+  # labs(colour="", x = "Inspection rate", y = "Value") +
   theme_bw() + 
   scale_color_manual(values = c("blue","red", "green", "black"))
 
