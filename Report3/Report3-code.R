@@ -75,38 +75,48 @@ list_of_means <- c()
 list_of_vars <- c()
 list_of_biases <- c()
 list_of_mses <- c()
+N <- 100
 
 # for (T_0 in seq(50,250,10)){
-for (v in seq(0.1,2.5,0.1)){
+for (v in seq(0.5,3,0.1)){
 # for (lambda in seq(0.1,2.5,0.1)){
   # v <- .7
   lambda <- 0.5
   T_0 <- 100
-  # for (j in 1:N){
-  inspection_times <- c(0, sort(runif(n = rpois(1, lambda = T_0 * v), min = 0, max = T_0)))
-  lightbulb <- 1
-  new_bulb_moments <- c(0)
-  lightbulbTime <- rexp(1, rate = lambda)
-  lightbulbLifetimes <- c()
-  for (i in 1:(length(inspection_times) - 1)){
-    if ( inspection_times[i + 1] - new_bulb_moments[lightbulb] > lightbulbTime){
-      new_bulb_moments <- append(new_bulb_moments, inspection_times[i + 1])
-      lightbulb <- lightbulb + 1
-      lightbulbLifetimes <- append(lightbulbLifetimes, lightbulbTime)
-      lightbulbTime <- rexp(1, rate = lambda)
+  avg_mean <- 0
+  avg_var <- 0
+  avg_bias <- 0
+  avg_mse <- 0
+  for (j in 1:N){
+    inspection_times <- c(0, sort(runif(n = rpois(1, lambda = T_0 * v), min = 0, max = T_0)))
+    lightbulb <- 1
+    new_bulb_moments <- c(0)
+    lightbulbTime <- rexp(1, rate = lambda)
+    lightbulbLifetimes <- c()
+    for (i in 1:(length(inspection_times) - 1)){
+      if ( inspection_times[i + 1] - new_bulb_moments[lightbulb] > lightbulbTime){
+        new_bulb_moments <- append(new_bulb_moments, inspection_times[i + 1])
+        lightbulb <- lightbulb + 1
+        lightbulbLifetimes <- append(lightbulbLifetimes, lightbulbTime)
+        lightbulbTime <- rexp(1, rate = lambda)
+      }
     }
+    
+    naive_lightbulb_lifetime <- new_bulb_moments[2:length(new_bulb_moments)] - new_bulb_moments[1:length(new_bulb_moments) - 1]
+    avg_mean <- avg_mean + mean(naive_lightbulb_lifetime)
+    avg_var <- avg_var + var(naive_lightbulb_lifetime)
+    avg_bias <- lambda - mean(naive_lightbulb_lifetime)
+
   }
-  
-  naive_lightbulb_lifetime <- new_bulb_moments[2:length(new_bulb_moments)] - new_bulb_moments[1:length(new_bulb_moments) - 1]
-  list_of_means <- append(list_of_means, mean(naive_lightbulb_lifetime))
-  list_of_vars <- append(list_of_vars, var(naive_lightbulb_lifetime))
-  
-  list_of_biases <- append(list_of_biases, lambda - mean(naive_lightbulb_lifetime))
-  list_of_mses <- append(list_of_mses, mean((rep(mean(naive_lightbulb_lifetime),length(naive_lightbulb_lifetime))-naive_lightbulb_lifetime)^2))
+    
+  list_of_means <- append(list_of_means, avg_mean / N)
+  list_of_vars <- append(list_of_vars, avg_var / N)
+  list_of_biases <- append(list_of_biases, avg_bias / N)
+  list_of_mses <- append(list_of_mses, avg_mse / N)
 }
 
 # df_task4 <- data.frame(time = seq(50,250,10), means = list_of_means, vars = list_of_vars, biases = list_of_biases, mses = list_of_mses)
-df_task4 <- data.frame(failure_rate = seq(0.1,2.5,0.1), means = list_of_means, vars = list_of_vars, biases = list_of_biases, mses = list_of_mses)
+df_task4 <- data.frame(failure_rate = seq(0.5,3,0.1), means = list_of_means, vars = list_of_vars, biases = list_of_biases, mses = list_of_mses)
 # df_task4 <- data.frame(inspection_rate = seq(0.1,2.5,0.1), means = list_of_means, vars = list_of_vars, biases = list_of_biases, mses = list_of_mses)
 # ggplot(data = df_task4, aes(x = time, y = value)) + 
 ggplot(data = df_task4, aes(x = failure_rate, y = value)) + 
