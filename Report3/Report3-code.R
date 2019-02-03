@@ -45,22 +45,23 @@ T_0 <- 100
 avg_no_of_replacements <- 0
 avg_time_without_light <- 0
 for (j in 1:N){
-    inspection_times <- c(0, sort(runif(n = rpois(1, lambda = T_0 * v), min = 0, max = T_0)))
-
-    lightbulb <- 1
-    new_bulb_moments <- c(0)
-    lightbulbTime <- rexp(1, rate = lambda)
-    lightbulbLifetimes <- c()
-    for (i in 1:(length(inspection_times) - 1)){
-        if ( inspection_times[i + 1] - new_bulb_moments[lightbulb] > lightbulbTime){
-            new_bulb_moments <- append(new_bulb_moments, inspection_times[i + 1])
-            lightbulb <- lightbulb + 1
-            lightbulbLifetimes <- append(lightbulbLifetimes, lightbulbTime)
-            lightbulbTime <- rexp(1, rate = lambda)
-        }
+  inspection_times <- c(0, sort(runif(n = rpois(1, lambda = T_0 * v), min = 0, max = T_0)))
+  
+  lightbulb <- 1
+  new_bulb_moments <- c(0)
+  lightbulbTime <- rexp(1, rate = lambda)
+  lightbulbLifetimes <- c()
+  for (i in 1:(length(inspection_times) - 1)){
+    if ( inspection_times[i + 1] - new_bulb_moments[lightbulb] > lightbulbTime){
+      new_bulb_moments <- append(new_bulb_moments, inspection_times[i + 1])
+      lightbulb <- lightbulb + 1
+      lightbulbLifetimes <- append(lightbulbLifetimes, lightbulbTime)
+      lightbulbTime <- rexp(1, rate = lambda)
     }
-    avg_time_without_light <- avg_time_without_light + mean(new_bulb_moments[2:length(new_bulb_moments)] - momentsOfFailure)
-    avg_no_of_replacements <- avg_no_of_replacements + lightbulb
+  }
+  momentsOfFailure <- lightbulbLifetimes + new_bulb_moments[1:length(new_bulb_moments) - 1]
+  avg_time_without_light <- avg_time_without_light + mean(new_bulb_moments[2:length(new_bulb_moments)] - momentsOfFailure)
+  avg_no_of_replacements <- avg_no_of_replacements + lightbulb
 }
 
 avg_no_of_replacements <- avg_no_of_replacements / N
@@ -69,27 +70,49 @@ avg_time_without_light <- avg_time_without_light / N
 
 # task 4 - just as I thought - assume that failure is at the moment of inspection
 
-v <- .7
-lambda <- 0.5
-T_0 <- 100
-inspection_times <- c(0, sort(runif(n = rpois(1, lambda = T_0 * v), min = 0, max = T_0)))
 
-lightbulb <- 1
-new_bulb_moments <- c(0)
-lightbulbTime <- rexp(1, rate = lambda)
-lightbulbLifetimes <- c()
-for (i in 1:(length(inspection_times) - 1)){
+list_of_means <- c()
+list_of_vars <- c()
+list_of_biases <- c()
+list_of_mses <- c()
+
+for (T_0 in seq(50,250,10)){
+  v <- .7
+  lambda <- 0.5
+  # T_0 <- 100
+  # for (j in 1:N){
+  inspection_times <- c(0, sort(runif(n = rpois(1, lambda = T_0 * v), min = 0, max = T_0)))
+  lightbulb <- 1
+  new_bulb_moments <- c(0)
+  lightbulbTime <- rexp(1, rate = lambda)
+  lightbulbLifetimes <- c()
+  for (i in 1:(length(inspection_times) - 1)){
     if ( inspection_times[i + 1] - new_bulb_moments[lightbulb] > lightbulbTime){
-        new_bulb_moments <- append(new_bulb_moments, inspection_times[i + 1])
-        lightbulb <- lightbulb + 1
-        lightbulbLifetimes <- append(lightbulbLifetimes, lightbulbTime)
-        lightbulbTime <- rexp(1, rate = lambda)
+      new_bulb_moments <- append(new_bulb_moments, inspection_times[i + 1])
+      lightbulb <- lightbulb + 1
+      lightbulbLifetimes <- append(lightbulbLifetimes, lightbulbTime)
+      lightbulbTime <- rexp(1, rate = lambda)
     }
+  }
+  
+  naive_lightbulb_lifetime <- new_bulb_moments[2:length(new_bulb_moments)] - new_bulb_moments[1:length(new_bulb_moments) - 1]
+  list_of_means <- append(list_of_means, mean(naive_lightbulb_lifetime))
+  list_of_vars <- append(list_of_vars, var(naive_lightbulb_lifetime))
+  
+  list_of_biases <- append(list_of_biases, lambda - mean(naive_lightbulb_lifetime))
+  list_of_mses <- append(list_of_mses, mean((rep(mean(naive_lightbulb_lifetime),length(naive_lightbulb_lifetime))-naive_lightbulb_lifetime)^2))
 }
 
-naive_lightbulb_lifetime <- new_bulb_moments[2:length(new_bulb_moments)] - new_bulb_moments[1:length(new_bulb_moments) - 1]
-mean_naive <- mean(naive_lightbulb_lifetime)
-variance_naive <- var(naive_lightbulb_lifetime)
+df_task4 <- data.frame(time = seq(50,250,10), means = list_of_means, vars = list_of_vars, biases = list_of_biases, mses = list_of_mses)
+ggplot(data = df_task4, aes(x = time, y = value)) + 
+  geom_point(aes(y = means, color = "Mean")) +
+  geom_point(aes(y = vars, color = "Variance")) +
+  geom_point(aes(y = biases, color = "Bias")) +
+  geom_point(aes(y = mses, color = "MSE")) +
+  labs(colour="", x = "Time horizon", y = "Value") +
+  theme_bw() + 
+  scale_color_manual(values = c("blue","red", "green", "black"))
+
 
 
 # task 5 - this estimator assumes that between last inspection and moment of bulb replacement (next inspection) the probability of light failure comes from exponential or uniform distribution
