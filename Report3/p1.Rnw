@@ -1,0 +1,178 @@
+
+\documentclass{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[utf8]{inputenc}
+\usepackage[top=3cm, bottom=3cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[colorlinks=true, linkcolor=blue]{hyperref}
+\usepackage{amsmath,amsthm,amsfonts,amssymb}
+\usepackage{wrapfig}
+\usepackage{subcaption}
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+<<global_settings, echo=FALSE, warning=FALSE, include = FALSE>>=
+library(knitr)
+library(car)
+library(ggplot2)
+library(gridExtra)
+library(GGally)
+library(latex2exp)
+packages<-function(x){
+  x<-as.character(match.call()[[2]])
+  if (!require(x,character.only=TRUE)){
+    install.packages(pkgs=x,repos="http://cran.r-project.org")
+    require(x,character.only=TRUE)
+  }
+}
+
+opts_chunk$set(fig.path='figure/', fig.align='center', fig.pos='H',fig.width=5, fig.height=4)
+opts_knit$set(root.dir = getwd())
+@
+  
+  
+  \SweaveOpts{concordance=TRUE}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  % strona tytulowa
+\title{Statistical packages - report 3}
+\author{Urszula Grochocińska, Marcin Mazurkiewicz}
+\maketitle
+\tableofcontents 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \section{Introduction}
+This report concerns periodic inspections and interval censored data. The first task is to prepare a generator for periodically inspected lightbulb. Then there would be presented a short analysis basing on this generator. Finally there are two approaches shown: first uses the naive estimator (without censored data) and the second one with censord data.
+  \subsection{Task 1 -- creating generator}
+We assume, that the life times of lightbulbs is a vector of iid random variables from exponential distribution with failure rate $\lambda$. The times between inspections is a vector of iid random variables from exponential distribution with rate $v$. Change of a failed lightbulb can occur only at the moment of inspection.
+The generator should take 3 parameters: two are mentioned above and additional $T_0$ which is the time horizon.
+The output of the generator is:
+\begin{itemize}
+\item interval censored lifetimes of lightbulbs,
+\item moments of inspection,
+\item moments of light failures.
+\end{itemize}
+<<generator, echo=true>>=
+  v <- .7
+  lambda <- 0.5
+  T_0 <- 100
+  inspection_times <- c(0, sort(runif(n = rpois(1, lambda = T_0 * v), min = 0, max = T_0)))
+  
+  lightbulb <- 1
+  new_bulb_moments <- c(0)
+  lightbulbTime <- rexp(1, rate = lambda)
+  lightbulbLifetimes <- c()
+  for (i in 1:(length(inspection_times) - 1)){
+    if ( inspection_times[i + 1] - new_bulb_moments[lightbulb] > lightbulbTime){
+      new_bulb_moments <- append(new_bulb_moments, inspection_times[i + 1])
+      lightbulb <- lightbulb + 1
+      lightbulbLifetimes <- append(lightbulbLifetimes, lightbulbTime)
+      lightbulbTime <- rexp(1, rate = lambda)
+    }
+  }
+  
+  df_inspection_times <- data.frame(number = 1:length(inspection_times), moments = inspection_times)
+@
+
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.4\textwidth}
+<<task_2_plot1, fig=TRUE, fig.width=4cm , echo=False>>=
+  ggplot(df_inspection_times, aes(x=moments, y=number)) + geom_point() + labs(x = "Moments of inspection", y = "Number of inspection") + coord_cartesian(xlim = c(3, T_0-3))
+@
+    \end{subfigure}
+    \begin{subfigure}[b]{0.4\textwidth}
+<<task_2_plot2, fig=TRUE, fig.width=4cm , echo=False>>=
+  momentsOfFailure <- lightbulbLifetimes + new_bulb_moments[1:length(new_bulb_moments) - 1]
+  df_momentsOfFailure <- data.frame(number = 1:length(momentsOfFailure), moments = momentsOfFailure)
+  ggplot(df_momentsOfFailure, aes(x=moments, y=number)) + geom_point() + labs(x = "Moments of failure", y = "Number of failure") + coord_cartesian(xlim = c(3, T_0-3))
+@
+    \end{subfigure}
+\end{figure}
+
+
+\subsection{Task 2 -- generator analysis}
+This section presents the answers for the question about generator -- in our case the parameters of the generator are $v=0.7 \quad \lambda=0.5 \quad T_0=100$ and we made 100 Monte Carlo iterations (when it was needed):
+\begin{enumerate}
+\item What is the percentage of time when there is no light?\\
+      \textbf{Answer:} The share of time without light is at level 49.5\%.
+\item What is the average number of lightbulb replacements?\\
+      \textbf{Answer:} The average number of replacements is 29.75.
+\item What is the average time without light?\\
+      \textbf{Answer:} The average time without light is 1.47.
+\end{enumerate}
+
+<<analysis, echo=true>>=
+  momentsOfFailure <- lightbulbLifetimes + new_bulb_moments[1:length(new_bulb_moments) - 1]
+  percentage_of_time_withoutlight <- sum(new_bulb_moments[2:length(new_bulb_moments)] - momentsOfFailure) / tail(new_bulb_moments, n = 1)
+  
+  N <- 100
+  v <- .7
+  lambda <- 0.5
+  T_0 <- 100
+  avg_no_of_replacements <- 0
+  avg_time_without_light <- 0
+  for (j in 1:N){
+      inspection_times <- c(0, sort(runif(n = rpois(1, lambda = T_0 * v), min = 0, max = T_0)))
+  
+      lightbulb <- 1
+      new_bulb_moments <- c(0)
+      lightbulbTime <- rexp(1, rate = lambda)
+      lightbulbLifetimes <- c()
+      for (i in 1:(length(inspection_times) - 1)){
+          if ( inspection_times[i + 1] - new_bulb_moments[lightbulb] > lightbulbTime){
+              new_bulb_moments <- append(new_bulb_moments, inspection_times[i + 1])
+              lightbulb <- lightbulb + 1
+              lightbulbLifetimes <- append(lightbulbLifetimes, lightbulbTime)
+              lightbulbTime <- rexp(1, rate = lambda)
+          }
+      }
+      momentsOfFailure <- lightbulbLifetimes + new_bulb_moments[1:length(new_bulb_moments) - 1]
+      avg_time_without_light <- avg_time_without_light 
+                                + mean(new_bulb_moments[2:length(new_bulb_moments)] 
+                                - momentsOfFailure)
+      avg_no_of_replacements <- avg_no_of_replacements + lightbulb
+  }
+  
+  avg_no_of_replacements <- avg_no_of_replacements / N
+  avg_time_without_light <- avg_time_without_light / N
+@
+\subsection{Task 3 -- naive estimator}
+This approach assumes that failures occured during inspections. We estimate the failure rate using an average of  right sides of intervals
+
+how the mean of such estimator depends on true failure rate and inspection rate,
+how the variance of such estimator depends on true failure rate and inspection rate,
+how the bias of such estimator depends on true failure rate and inspection rate,
+how the mean square error of such estimator depends on true failure rate and inspection rate.
+
+<<naive, echo=true>>=
+  v <- .7
+  lambda <- 0.5
+  T_0 <- 100
+  inspection_times <- c(0, sort(runif(n = rpois(1, lambda = T_0 * v), min = 0, max = T_0)))
+  
+  lightbulb <- 1
+  new_bulb_moments <- c(0)
+  lightbulbTime <- rexp(1, rate = lambda)
+  lightbulbLifetimes <- c()
+  for (i in 1:(length(inspection_times) - 1)){
+      if ( inspection_times[i + 1] - new_bulb_moments[lightbulb] > lightbulbTime){
+          new_bulb_moments <- append(new_bulb_moments, inspection_times[i + 1])
+          lightbulb <- lightbulb + 1
+          lightbulbLifetimes <- append(lightbulbLifetimes, lightbulbTime)
+          lightbulbTime <- rexp(1, rate = lambda)
+      }
+  }
+  
+  naive_lightbulb_lifetime <- new_bulb_moments[2:length(new_bulb_moments)] 
+                              - new_bulb_moments[1:length(new_bulb_moments) - 1]
+  mean_naive <- mean(naive_lightbulb_lifetime)
+  variance_naive <- var(naive_lightbulb_lifetime)
+@
+
+
+\end{document}
