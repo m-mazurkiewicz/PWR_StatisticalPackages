@@ -83,17 +83,17 @@ The examplary samples are shown on the figure \ref{samples}
 
 
 \begin{figure}
-    \centering
-    \begin{subfigure}[b]{\textwidth}
-<<task_2_plot1, fig=TRUE, fig.width=10cm , echo=False>>=
+    \center
+    \begin{subfigure}[b]{0.8\textwidth}
+<<task_2_plot1, fig=TRUE, fig.width=8cm , echo=False>>=
   ggplot(df_inspection_times, aes(x = moments, y = number,
                                   color = "inspection")) + geom_point() +
     labs(x = "Moments of inspection", y = "Number of inspection", colour = "") +
     coord_cartesian(xlim = c(3, T_0 - 3)) + scale_color_manual(values = "black")
 @
     \end{subfigure}
-    \begin{subfigure}[b]{\textwidth}
-<<task_2_plot2, fig=TRUE, fig.width=10cm , echo=False>>=
+    \begin{subfigure}[b]{0.8\textwidth}
+<<task_2_plot2, fig=TRUE, fig.width=8cm , echo=False>>=
   momentsOfFailure <- lightbulbLifetimes +
     new_bulb_moments[1:length(new_bulb_moments) - 1]
   df_momentsOfFailure <- data.frame(number = 1:length(momentsOfFailure),
