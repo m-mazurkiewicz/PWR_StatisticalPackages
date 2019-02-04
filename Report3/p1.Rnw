@@ -55,6 +55,7 @@ The output of the generator is:
 \item moments of inspection,
 \item moments of light failures.
 \end{itemize}
+The examplary samples are shown on the figure \ref{samples}
 <<generator, echo=true>>=
   v <- .7
   lambda <- 0.5
@@ -80,18 +81,20 @@ The output of the generator is:
 
 \begin{figure}
     \centering
-    \begin{subfigure}[b]{0.4\textwidth}
-<<task_2_plot1, fig=TRUE, fig.width=4cm , echo=False>>=
+    \begin{subfigure}[b]{0.7\textwidth}
+<<task_2_plot1, fig=TRUE, fig.width=10cm , echo=False>>=
   ggplot(df_inspection_times, aes(x=moments, y=number)) + geom_point() + labs(x = "Moments of inspection", y = "Number of inspection") + coord_cartesian(xlim = c(3, T_0-3))
 @
     \end{subfigure}
-    \begin{subfigure}[b]{0.4\textwidth}
-<<task_2_plot2, fig=TRUE, fig.width=4cm , echo=False>>=
+    \begin{subfigure}[b]{0.7\textwidth}
+<<task_2_plot2, fig=TRUE, fig.width=10cm , echo=False>>=
   momentsOfFailure <- lightbulbLifetimes + new_bulb_moments[1:length(new_bulb_moments) - 1]
   df_momentsOfFailure <- data.frame(number = 1:length(momentsOfFailure), moments = momentsOfFailure)
   ggplot(df_momentsOfFailure, aes(x=moments, y=number)) + geom_point() + labs(x = "Moments of failure", y = "Number of failure") + coord_cartesian(xlim = c(3, T_0-3))
 @
     \end{subfigure}
+    \label{samples}
+    \caption{Samples produced by generator with $v=0.7, \quad \lambda=0.5, \quad T_0=100$}
 \end{figure}
 
 
@@ -108,7 +111,8 @@ This section presents the answers for the question about generator -- in our cas
 
 <<analysis, echo=true>>=
   momentsOfFailure <- lightbulbLifetimes + new_bulb_moments[1:length(new_bulb_moments) - 1]
-  percentage_of_time_withoutlight <- sum(new_bulb_moments[2:length(new_bulb_moments)] - momentsOfFailure) / tail(new_bulb_moments, n = 1)
+  percentage_of_time_withoutlight <- sum(new_bulb_moments[2:length(new_bulb_moments)] 
+                                      - momentsOfFailure) / tail(new_bulb_moments, n = 1)
   
   N <- 100
   v <- .7
@@ -142,37 +146,145 @@ This section presents the answers for the question about generator -- in our cas
   avg_time_without_light <- avg_time_without_light / N
 @
 \subsection{Task 3 -- naive estimator}
-This approach assumes that failures occured during inspections. We estimate the failure rate using an average of  right sides of intervals
-
-how the mean of such estimator depends on true failure rate and inspection rate,
-how the variance of such estimator depends on true failure rate and inspection rate,
-how the bias of such estimator depends on true failure rate and inspection rate,
-how the mean square error of such estimator depends on true failure rate and inspection rate.
+This approach assumes that failures occured during inspections. We estimate the failure rate using an average of  right sides of intervals.
 
 <<naive, echo=true>>=
-  v <- .7
+list_of_means <- c()
+list_of_vars <- c()
+list_of_biases <- c()
+list_of_mses <- c()
+N <- 100
+
+# for (T_0 in seq(50,250,10)){
+for (v in seq(0.5,3,0.1)){
+# for (lambda in seq(0.1,2.5,0.1)){
+  # v <- .7
   lambda <- 0.5
   T_0 <- 100
-  inspection_times <- c(0, sort(runif(n = rpois(1, lambda = T_0 * v), min = 0, max = T_0)))
-  
-  lightbulb <- 1
-  new_bulb_moments <- c(0)
-  lightbulbTime <- rexp(1, rate = lambda)
-  lightbulbLifetimes <- c()
-  for (i in 1:(length(inspection_times) - 1)){
+  avg_mean <- 0
+  avg_var <- 0
+  avg_bias <- 0
+  avg_mse <- 0
+  for (j in 1:N){
+    inspection_times <- c(0, sort(runif(n = rpois(1, lambda = T_0 * v), min = 0, max = T_0)))
+    lightbulb <- 1
+    new_bulb_moments <- c(0)
+    lightbulbTime <- rexp(1, rate = lambda)
+    lightbulbLifetimes <- c()
+    for (i in 1:(length(inspection_times) - 1)){
       if ( inspection_times[i + 1] - new_bulb_moments[lightbulb] > lightbulbTime){
-          new_bulb_moments <- append(new_bulb_moments, inspection_times[i + 1])
-          lightbulb <- lightbulb + 1
-          lightbulbLifetimes <- append(lightbulbLifetimes, lightbulbTime)
-          lightbulbTime <- rexp(1, rate = lambda)
+        new_bulb_moments <- append(new_bulb_moments, inspection_times[i + 1])
+        lightbulb <- lightbulb + 1
+        lightbulbLifetimes <- append(lightbulbLifetimes, lightbulbTime)
+        lightbulbTime <- rexp(1, rate = lambda)
       }
+    }
+    
+    naive_lightbulb_lifetime <- new_bulb_moments[2:length(new_bulb_moments)] - new_bulb_moments[1:length(new_bulb_moments) - 1]
+    avg_mean <- avg_mean + mean(naive_lightbulb_lifetime)
+    avg_var <- avg_var + var(naive_lightbulb_lifetime)
+    avg_bias <- lambda - mean(naive_lightbulb_lifetime)
+
   }
-  
-  naive_lightbulb_lifetime <- new_bulb_moments[2:length(new_bulb_moments)] 
-                              - new_bulb_moments[1:length(new_bulb_moments) - 1]
-  mean_naive <- mean(naive_lightbulb_lifetime)
-  variance_naive <- var(naive_lightbulb_lifetime)
+    
+  list_of_means <- append(list_of_means, avg_mean / N)
+  list_of_vars <- append(list_of_vars, avg_var / N)
+  list_of_biases <- append(list_of_biases, avg_bias / N)
+  list_of_mses <- append(list_of_mses, avg_mse / N)
+}
+
 @
 
+\begin{figure}
+\center
+<<dependance_fr, fig=TRUE, fig.hight=5cm , echo=False>>=
+  df_task4 <- data.frame(failure_rate = seq(0.5,3,0.1), means = list_of_means, vars = list_of_vars
+                         , biases = list_of_biases, mses = list_of_mses)
+  # df_task4 <- data.frame(inspection_rate = seq(0.1,2.5,0.1), means = list_of_means, vars = list_of_vars, biases = list_of_biases, mses = list_of_mses)
+  # ggplot(data = df_task4, aes(x = time, y = value)) + 
+  ggplot(data = df_task4, aes(x = failure_rate, y = value)) + 
+  # ggplot(data = df_task4, aes(x = inspection_rate, y = value)) +   
+    geom_point(aes(y = means, color = "Mean")) +
+    geom_point(aes(y = vars, color = "Variance")) +
+    geom_point(aes(y = biases, color = "Bias")) +
+    geom_point(aes(y = mses, color = "MSE")) +
+    # labs(colour="", x = "Time horizon", y = "Value") +
+    labs(colour="", x = "Failure rate", y = "Value") +
+    # labs(colour="", x = "Inspection rate", y = "Value") +
+    theme_bw() + 
+    scale_color_manual(values = c("blue","red", "green", "black"))
+@
+\caption{Characteristics in dependence of failure rate.}
+\label{FR}
+\end{figure}
+
+<<naive2, echo=false>>=
+list_of_means <- c()
+list_of_vars <- c()
+list_of_biases <- c()
+list_of_mses <- c()
+N <- 100
+
+for (lambda in seq(0.1,2.5,0.1)){
+  v <- .7
+  #lambda <- 0.5
+  T_0 <- 100
+  avg_mean <- 0
+  avg_var <- 0
+  avg_bias <- 0
+  avg_mse <- 0
+  for (j in 1:N){
+    inspection_times <- c(0, sort(runif(n = rpois(1, lambda = T_0 * v), min = 0, max = T_0)))
+    lightbulb <- 1
+    new_bulb_moments <- c(0)
+    lightbulbTime <- rexp(1, rate = lambda)
+    lightbulbLifetimes <- c()
+    for (i in 1:(length(inspection_times) - 1)){
+      if ( inspection_times[i + 1] - new_bulb_moments[lightbulb] > lightbulbTime){
+        new_bulb_moments <- append(new_bulb_moments, inspection_times[i + 1])
+        lightbulb <- lightbulb + 1
+        lightbulbLifetimes <- append(lightbulbLifetimes, lightbulbTime)
+        lightbulbTime <- rexp(1, rate = lambda)
+      }
+    }
+    
+    naive_lightbulb_lifetime <- new_bulb_moments[2:length(new_bulb_moments)] - new_bulb_moments[1:length(new_bulb_moments) - 1]
+    avg_mean <- avg_mean + mean(naive_lightbulb_lifetime)
+    avg_var <- avg_var + var(naive_lightbulb_lifetime)
+    avg_bias <- lambda - mean(naive_lightbulb_lifetime)
+
+  }
+    
+  list_of_means <- append(list_of_means, avg_mean / N)
+  list_of_vars <- append(list_of_vars, avg_var / N)
+  list_of_biases <- append(list_of_biases, avg_bias / N)
+  list_of_mses <- append(list_of_mses, avg_mse / N)
+}
+
+@
+
+\begin{figure}
+\center
+<<dependance_ir, fig=TRUE, fig.hight=5cm , echo=False>>=
+   df_task4 <- data.frame(inspection_rate = seq(0.1,2.5,0.1), means = list_of_means, vars = list_of_vars
+                           , biases = list_of_biases, mses = list_of_mses)
+   #ggplot(data = df_task4, aes(x = time, y = value)) + 
+   ggplot(data = df_task4, aes(x = inspection_rate, y = value)) +
+      geom_point(aes(y = means, color = "Mean")) +
+      geom_point(aes(y = vars, color = "Variance")) +
+      geom_point(aes(y = biases, color = "Bias")) +
+      geom_point(aes(y = mses, color = "MSE")) +
+      labs(colour="", x = "Inspection rate", y = "Value") +
+      theme_bw() + 
+      scale_color_manual(values = c("blue","red", "green", "black"))
+@
+\caption{Characteristics in dependence of inspection rate.}
+\label{IR}
+\end{figure}
+
+The charts \ref{FR} and \ref{IR} presents the dependence between mean, variance bias and MSE and respectively failure rate and inspection rate. In both cases  the mean and variance have downward trend. The bias and the MSE result in values near 0 becasue we have taken 100 Monte Carlo Steps.
+
+\subsection{Conclusions}
+Our analysis consist of only one of approach about censored data analysis. That one is a simple approach in which we assume that the failurs occures in the same time as inspections. In such case our analysis shows that about half of time there is no light. Taking into consideration the mean and the variance of the estimator we obtain the results that shows that with increasing inspection rate or falure rate both of this characteristics decrease. Another aproach is the Turnbull estimator which reject the asumption about the occurance of the failure in the inspection times. This way of analysing such data seems to be more correct.
 
 \end{document}
