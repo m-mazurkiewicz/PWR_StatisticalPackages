@@ -284,7 +284,7 @@ for (lambda in seq(0.1,2.5,0.1)){
 
 The charts \ref{FR} and \ref{IR} presents the dependence between mean, variance bias and MSE and respectively failure rate and inspection rate. In both cases  the mean and variance have downward trend. The bias and the MSE result in values near 0 becasue we have taken 100 Monte Carlo Steps.
 
-\subsection{Conclusions}
+\section{Conclusions}
 Our analysis consist of only one of approach about censored data analysis. That one is a simple approach in which we assume that the failurs occures in the same time as inspections. In such case our analysis shows that about half of time there is no light. Taking into consideration the mean and the variance of the estimator we obtain the results that shows that with increasing inspection rate or falure rate both of this characteristics decrease. Another aproach is the Turnbull estimator which reject the asumption about the occurance of the failure in the inspection times. This way of analysing such data seems to be more correct.
 
 \end{document}
