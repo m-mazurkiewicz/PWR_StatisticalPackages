@@ -104,8 +104,8 @@ The examplary samples are shown on the figure \ref{samples}
     coord_cartesian(xlim = c(3, T_0 - 3)) + scale_color_manual(values = "black")
 @
     \end{subfigure}
-    \label{samples}
     \caption{Samples produced by generator with $v=0.7, \quad \lambda=0.5, \quad T_0=100$}
+    \label{samples}
 \end{figure}
 
 
@@ -172,7 +172,9 @@ list_of_biases <- c()
 list_of_mses <- c()
 N <- 100
 
+# for (T_0 in seq(50, 250, 10)){
 for (v in seq(0.5, 3, 0.1)){
+# for (lambda in seq(0.1, 2.5, 0.1)){
   lambda <- 0.5
   T_0 <- 100
   avg_mean <- 0
@@ -301,7 +303,7 @@ for (lambda in seq(0.1, 2.5, 0.1)){
 The charts \ref{FR} and \ref{IR} presents the dependence between mean, variance bias, and MSE and respectively failure rate and inspection rate. In both cases, the mean and variance have a downward trend. The bias and the MSE result in values near 0 because we have taken 100 Monte Carlo Steps.
 
 \section{LintR}
-In our report we have also used \textit{LintR} package to check the correctness of written code. To do that we executed the following line of code in console: \emph{lintr::lint("name_of_file.R")} . All mistakes had been corrected.
+In our report, we have also used \textit{LintR} package to check the correctness of written code. To do that we executed the following line of code in console: \emph{lintr::lint("name_of_file.R")}. All mistakes had been corrected. In one part of the code we intentionally left some comments.
 
 \section{Conclusions}
 Our analysis consist of only one of approach about censored data analysis. That one is a simple approach in which we assume that the failurs occures in the same time as inspections. In such case our analysis shows that about half of time there is no light. Taking into consideration the mean and the variance of the estimator we obtain the results that shows that with increasing inspection rate or falure rate both of this characteristics decrease. Another aproach is the Turnbull estimator which reject the asumption about the occurance of the failure in the inspection times. This way of analysing such data seems to be more correct.
